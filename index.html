@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Utkarsh OS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --surface2: #eeebe6;
+  --border: #e5e0d8;
+  --border2: #d5cfc5;
+  --text: #1c1a17;
+  --text2: #7a7468;
+  --text3: #b0a898;
+  --accent: #b8892e;
+  --green: #4a8a4a;
+  --blue: #3a7a9a;
+  --red: #c04040;
+  --orange: #c87830;
+  --purple: #7a5a9a;
+  --pill-am: #b8892e;
+  --pill-pm: #4a8a4a;
+  --pill-night: #3a7a9a;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NAV */
+.nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0 8px;
+  cursor: pointer;
+  gap: 3px;
+  transition: all 0.15s;
+}
+
+.nav-item .nav-icon { font-size: 20px; line-height: 1; }
+.nav-item .nav-label { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; }
+.nav-item.active .nav-label { color: var(--accent); }
+.nav-item.active .nav-icon { filter: saturate(1.5); }
+
+/* HEADER */
+.header {
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 100;
+  padding: 20px 20px 14px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.header-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.progress-wrap {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.progress-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+/* PAGE */
+.page { display: none; padding: 0 0 90px; }
+.page.active { display: block; }
+
+/* SECTION */
+.section { padding: 0 16px; margin-top: 20px; }
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.time-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.chip-am { background: rgba(184,137,46,0.1); color: var(--pill-am); border: 0.5px solid rgba(184,137,46,0.2); }
+.chip-noon { background: rgba(200,120,48,0.1); color: var(--orange); border: 0.5px solid rgba(200,120,48,0.2); }
+.chip-pm { background: rgba(74,138,74,0.1); color: var(--pill-pm); border: 0.5px solid rgba(74,138,74,0.2); }
+.chip-night { background: rgba(58,122,154,0.1); color: var(--pill-night); border: 0.5px solid rgba(58,122,154,0.2); }
+
+.chip-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+/* PILL CARD */
+.pill-list { display: flex; flex-direction: column; gap: 7px; }
+
+.pill-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.pill-card:active { transform: scale(0.98); }
+
+.pill-card.taken {
+  background: var(--surface2);
+  border-color: var(--border2);
+  opacity: 0.55;
+}
+
+.pill-card.taken .pill-name { text-decoration: line-through; color: var(--text3); }
+.pill-card.taken .pill-dose { color: var(--text3); }
+
+.check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.pill-card.taken .check {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.check svg { opacity: 0; transition: opacity 0.18s; }
+.pill-card.taken .check svg { opacity: 1; }
+
+.pill-info { flex: 1; min-width: 0; }
+.pill-name { font-size: 13px; font-weight: 600; line-height: 1.3; transition: all 0.18s; }
+.pill-dose { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); margin-top: 1px; transition: all 0.18s; }
+.pill-note-text { font-size: 9px; color: var(--text3); margin-top: 2px; font-style: italic; }
+
+.dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.dot-med { background: var(--red); }
+.dot-sup { background: var(--border2); }
+
+.eod-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  background: rgba(58,122,154,0.08);
+  color: var(--blue);
+  border: 0.5px solid rgba(58,122,154,0.2);
+  padding: 2px 5px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.divider { height: 0.5px; background: var(--border); margin: 4px 16px 0; }
+
+/* WORKOUT PAGE */
+.workout-checkin {
+  margin: 16px 16px 0;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.checkin-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+
+.checkin-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+
+.toggle-btn.active-yes { background: rgba(74,138,74,0.1); border-color: var(--green); color: var(--green); }
+.toggle-btn.active-no { background: rgba(192,64,64,0.08); border-color: var(--red); color: var(--red); }
+
+.muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+
+.muscle-chip {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text2);
+}
+
+.muscle-chip.selected {
+  background: rgba(184,137,46,0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.duration-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.duration-row label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.duration-row input {
+  width: 70px;
+  padding: 6px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+}
+
+.notes-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  resize: none;
+  margin-bottom: 12px;
+  min-height: 60px;
+}
+
+.save-btn {
+  width: 100%;
+  padding: 11px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.save-btn:active { opacity: 0.8; }
+
+/* Exercise log */
+.exercise-section {
+  margin: 12px 16px 0;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.add-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  background: rgba(184,137,46,0.08);
+  border: 0.5px solid rgba(184,137,46,0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.exercise-row {
+  display: grid;
+  grid-template-columns: 1fr 50px 60px 60px;
+  gap: 6px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.ex-input {
+  padding: 7px 9px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+}
+
+.ex-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--text3);
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.remove-ex {
+  font-size: 16px;
+  color: var(--text3);
+  cursor: pointer;
+  text-align: center;
+  line-height: 1;
+  padding: 4px;
+}
+
+/* TASKS */
+.task-add-row {
+  margin: 16px 16px 0;
+  display: flex;
+  gap: 8px;
+}
+
+.task-input-main {
+  flex: 1;
+  padding: 11px 14px;
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+}
+
+.task-add-btn {
+  padding: 11px 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.task-filters {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px 0;
+  overflow-x: auto;
+}
+
+.filter-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+  background: var(--surface);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.task-list { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 7px; }
+
+.task-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.task-card.done {
+  opacity: 0.5;
+  background: var(--surface2);
+}
+
+.task-card.done .task-title { text-decoration: line-through; color: var(--text3); }
+
+.task-check {
+  width: 20px; height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.task-card.done .task-check {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.task-check svg { opacity: 0; transition: opacity 0.18s; }
+.task-card.done .task-check svg { opacity: 1; }
+
+.task-body { flex: 1; min-width: 0; }
+.task-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
+.task-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 3px; }
+
+.priority-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.p-high { background: var(--red); }
+.p-medium { background: var(--orange); }
+.p-low { background: var(--green); }
+
+.task-detail-panel {
+  display: none;
+  padding: 0 16px;
+  margin-top: 10px;
+}
+
+.task-detail-panel.open { display: block; }
+
+.detail-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  resize: none;
+  margin-bottom: 8px;
+}
+
+.detail-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.detail-select {
+  flex: 1;
+  padding: 8px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+  outline: none;
+}
+
+/* NOTES */
+.note-add {
+  margin: 16px 16px 0;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.note-title-input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  outline: none;
+  margin-bottom: 8px;
+}
+
+.note-title-input::placeholder { color: var(--text3); }
+
+.note-content-input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  resize: none;
+  min-height: 80px;
+  margin-bottom: 10px;
+}
+
+.note-content-input::placeholder { color: var(--text3); }
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-tags-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  outline: none;
+}
+
+.note-save-btn {
+  padding: 7px 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.notes-list { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 8px; }
+
+.note-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.note-card:active { transform: scale(0.99); }
+
+.note-card-title { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+.note-card-preview { font-size: 12px; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.note-card-meta { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); margin-top: 8px; }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 300;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* LOADING */
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.8;
+}
+
+/* workout history */
+.history-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 8px 16px 0;
+}
+
+.history-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); margin-bottom: 6px; }
+.history-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.history-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.history-chip { font-family: 'DM Mono', monospace; font-size: 9px; background: var(--bg); border: 0.5px solid var(--border); padding: 2px 7px; border-radius: 10px; color: var(--text2); }
+
+/* WORKOUT TABS */
+.wo-tab {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text3);
+  transition: all 0.15s;
+}
+.wo-tab.active { background: var(--accent); color: white; }
+.wo-section { padding-bottom: 20px; }
+
+/* SESSION EXERCISES */
+.session-exercise {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.session-ex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px 8px;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.session-ex-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.session-ex-muscle {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+}
+
+.set-row {
+  display: grid;
+  grid-template-columns: 32px 80px 70px 70px 36px;
+  gap: 4px;
+  padding: 6px 14px;
+  align-items: center;
+  border-bottom: 0.5px solid var(--border);
+  transition: background 0.15s;
+}
+
+.set-row.completed { background: rgba(74,138,74,0.06); }
+.set-row.warmup { background: rgba(184,137,46,0.04); }
+
+.set-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+}
+
+.set-num.is-warmup {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.set-prev {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  text-align: center;
+}
+
+.set-input {
+  padding: 6px 4px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  outline: none;
+  text-align: center;
+  width: 100%;
+}
+
+.set-input:focus { border-color: var(--accent); }
+
+.set-check {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.set-check.done { background: var(--green); border-color: var(--green); }
+.set-check svg { opacity: 0; transition: opacity 0.15s; }
+.set-check.done svg { opacity: 1; }
+
+.set-header-row {
+  display: grid;
+  grid-template-columns: 32px 80px 70px 70px 36px;
+  gap: 4px;
+  padding: 4px 14px;
+  background: var(--bg);
+}
+
+.set-header-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--text3);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.add-set-btn {
+  width: 100%;
+  padding: 9px;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.add-set-btn:hover { background: var(--bg); }
+
+/* MEASURES */
+.measure-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.measure-row {
+  display: flex;
+  align-items: center;
+  padding: 11px 14px;
+  border-bottom: 0.5px solid var(--border);
+  gap: 10px;
+}
+
+.measure-row:last-child { border-bottom: none; }
+.measure-label { flex: 1; font-size: 13px; font-weight: 500; }
+
+.measure-input {
+  width: 70px;
+  padding: 5px 8px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  text-align: center;
+}
+
+.measure-unit {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  width: 20px;
+}
+
+/* EXERCISE SEARCH */
+.ex-result {
+  padding: 12px 4px;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.ex-result:active { background: var(--bg); }
+.ex-result-name { font-size: 13px; font-weight: 600; }
+.ex-result-muscle { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 2px; }
+.ex-add-btn { font-size: 20px; color: var(--accent); padding: 4px 8px; }
+
+/* TEMPLATE CARD */
+.template-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.template-card:active { transform: scale(0.99); }
+.template-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.template-exercises { font-size: 11px; color: var(--text2); line-height: 1.6; }
+.template-actions { display: flex; gap: 8px; margin-top: 10px; }
+.template-action { font-family: 'DM Mono', monospace; font-size: 10px; padding: 5px 10px; border-radius: 8px; border: 0.5px solid var(--border); background: var(--bg); cursor: pointer; color: var(--text2); }
+.template-action.start { background: var(--accent); border-color: var(--accent); color: white; font-weight: 700; }
+
+/* HISTORY SESSION CARD */
+.session-history-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 10px 16px 0;
+}
+
+.sh-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.sh-name { font-size: 14px; font-weight: 700; }
+.sh-date { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+.sh-stats { display: flex; gap: 14px; margin-bottom: 10px; }
+.sh-stat { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); }
+.sh-stat span { color: var(--text); font-weight: 500; }
+.sh-ex-table { width: 100%; border-collapse: collapse; }
+.sh-ex-table td { font-size: 11px; padding: 3px 0; color: var(--text2); }
+.sh-ex-table td:first-child { font-weight: 600; color: var(--text); width: 55%; }
+.sh-ex-table td:last-child { color: var(--text3); font-family: 'DM Mono', monospace; font-size: 10px; text-align: right; }
+
+select option { background: white; }
+
+/* TASK SYSTEM */
+.filter-chip {
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+  background: var(--surface);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text2);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+.cat-chip {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+}
+.cat-chip.selected { background: rgba(184,137,46,0.12); border-color: var(--accent); color: var(--accent); }
+
+.task-card-new {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.18s;
+}
+
+.task-card-new.is-done { opacity: 0.5; }
+.task-card-new.is-done .tcn-title { text-decoration: line-through; color: var(--text3); }
+.task-card-new.is-overdue { border-color: rgba(192,64,64,0.3); background: rgba(192,64,64,0.02); }
+
+.tcn-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  cursor: pointer;
+}
+
+.tcn-check {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.task-card-new.is-done .tcn-check { background: var(--green); border-color: var(--green); }
+.tcn-check svg { opacity: 0; transition: opacity 0.18s; }
+.task-card-new.is-done .tcn-check svg { opacity: 1; }
+
+.tcn-body { flex: 1; min-width: 0; }
+.tcn-title { font-size: 13px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+
+.tcn-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+
+.tcn-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 0.5px solid var(--border);
+  color: var(--text3);
+}
+
+.tcn-due { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+.tcn-due.overdue { color: var(--red); font-weight: 500; }
+.tcn-due.today { color: var(--accent); font-weight: 500; }
+
+.tcn-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.priority-bar {
+  width: 3px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  align-self: stretch;
+  margin-top: 1px;
+}
+
+.pb-high { background: var(--red); }
+.pb-medium { background: var(--orange); }
+.pb-low { background: var(--green); }
+
+.status-dot {
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text3);
+}
+
+.tcn-expand {
+  padding: 0 14px 12px 48px;
+  display: none;
+  border-top: 0.5px solid var(--border);
+  padding-top: 10px;
+}
+
+.tcn-expand.open { display: block; }
+.tcn-desc { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; }
+
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.sub-check {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.subtask-item.done .sub-check { background: var(--green); border-color: var(--green); }
+.sub-check svg { opacity: 0; transition: opacity 0.15s; }
+.subtask-item.done .sub-check svg { opacity: 1; }
+.subtask-item.done .sub-title { text-decoration: line-through; color: var(--text3); }
+.sub-title { font-size: 12px; color: var(--text2); }
+
+.tcn-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tcn-action-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+
+.tcn-action-btn:hover { border-color: var(--text2); }
+.tcn-action-btn.del { color: var(--red); border-color: rgba(192,64,64,0.2); }
+
+.subtask-input-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.subtask-input-row input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+}
+
+.sub-remove { font-size: 16px; color: var(--text3); cursor: pointer; padding: 2px 4px; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PAGES -->
+
+<!-- PILLS PAGE -->
+<div class="page active" id="page-pills">
+  <div class="header">
+    <div class="header-row">
+      <div class="header-title">Pills</div>
+      <div class="header-date" id="pillDate"></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="pillProgress" style="width:0%"></div></div>
+      <div class="progress-count" id="pillCount">0 / 0</div>
+    </div>
+  </div>
+
+  <!-- MORNING -->
+  <div class="section">
+    <div class="section-label">
+      <div class="time-chip chip-am">Morning</div>
+      <div class="chip-note">with breakfast</div>
+    </div>
+    <div class="pill-list">
+      <div class="pill-card" data-pid="mecobal" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Mecobal-OD</div>
+          <div class="pill-dose">Methylcobalamin 1500mcg</div>
+          <div class="pill-note-text">Sublingual — 10 min before food, hold 60s</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="mesacol-am" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Mesacol Granules — AM</div>
+          <div class="pill-dose">Mesalamine 1g — dose 1 of 2</div>
+          <div class="pill-note-text">UC maintenance — with breakfast</div>
+        </div>
+        <div class="dot dot-med"></div>
+      </div>
+      <div class="pill-card" data-pid="calcium" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Calcium Citrate Malate</div>
+          <div class="pill-dose">2 tabs — Ca 500mg + Mg 200mg + K2 + D3 400IU</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="drise" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">D-Rise 2000</div>
+          <div class="pill-dose">Vitamin D3 2000 IU</div>
+          <div class="pill-note-text">Fat-soluble — must take with food</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="cissus" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Cissus Combo</div>
+          <div class="pill-dose">Ca 300mg + Mg 94mg + Zn 5.3mg + D3 300IU</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="omega3" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Omega-3 Fish Oil</div>
+          <div class="pill-dose">1 softgel — EPA 550mg / DHA 350mg</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="becozinc" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Becozinc</div>
+          <div class="pill-dose">Zinc + B-Complex + Vit C</div>
+        </div>
+        <div class="eod-chip">EOD</div>
+        <div class="dot dot-sup"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- AFTERNOON -->
+  <div class="section">
+    <div class="section-label">
+      <div class="time-chip chip-noon">Afternoon</div>
+      <div class="chip-note">with lunch</div>
+    </div>
+    <div class="pill-list">
+      <div class="pill-card" data-pid="ashwa-noon" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Ashwagandha</div>
+          <div class="pill-dose">250mg — dose 1 of 2</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- EVENING -->
+  <div class="section">
+    <div class="section-label">
+      <div class="time-chip chip-pm">Evening</div>
+      <div class="chip-note">with dinner</div>
+    </div>
+    <div class="pill-list">
+      <div class="pill-card" data-pid="mesacol-pm" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Mesacol Granules — PM</div>
+          <div class="pill-dose">Mesalamine 1g — dose 2 of 2</div>
+          <div class="pill-note-text">UC maintenance — with dinner</div>
+        </div>
+        <div class="dot dot-med"></div>
+      </div>
+      <div class="pill-card" data-pid="ashwa-pm" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Ashwagandha</div>
+          <div class="pill-dose">250mg — dose 2 of 2</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- NIGHT -->
+  <div class="section">
+    <div class="section-label">
+      <div class="time-chip chip-night">Bedtime</div>
+      <div class="chip-note">1hr after dinner</div>
+    </div>
+    <div class="pill-list">
+      <div class="pill-card" data-pid="magnesium" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Magnesium Glycinate</div>
+          <div class="pill-dose">1–2 caps — Elemental Mg 121–242mg</div>
+          <div class="pill-note-text">Sleep + gut motility</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="probiotic" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">Probiotic 30B CFU</div>
+          <div class="pill-dose">Multi-strain + Inulin</div>
+        </div>
+        <div class="dot dot-sup"></div>
+      </div>
+      <div class="pill-card" data-pid="vsl3" onclick="togglePill(this)">
+        <div class="check"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="pill-info">
+          <div class="pill-name">VSL#3</div>
+          <div class="pill-dose">Medical-grade probiotic</div>
+          <div class="pill-note-text">Post-antibiotic microbiome restoration</div>
+        </div>
+        <div class="dot dot-med"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORKOUT PAGE -->
+<div class="page" id="page-workout">
+  <div class="header">
+    <div class="header-row">
+      <div class="header-title">Workout</div>
+      <div style="display:flex;gap:8px;">
+        <div onclick="showWoTab('history')" id="wo-tab-history" class="wo-tab active">History</div>
+        <div onclick="showWoTab('log')" id="wo-tab-log" class="wo-tab">Log</div>
+        <div onclick="showWoTab('templates')" id="wo-tab-templates" class="wo-tab">Templates</div>
+        <div onclick="showWoTab('measure')" id="wo-tab-measure" class="wo-tab">Measure</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="wo-history" class="wo-section">
+    <div id="workoutHistory"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- LOG TAB -->
+  <div id="wo-log" class="wo-section" style="display:none;">
+    <div style="padding:16px 16px 0;">
+      <!-- Template picker -->
+      <div style="margin-bottom:12px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:6px;">START FROM TEMPLATE</div>
+        <div id="templatePickerList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        <div onclick="startBlankSession()" style="margin-top:8px;padding:9px 14px;border:0.5px dashed var(--border2);border-radius:10px;font-size:12px;color:var(--text3);text-align:center;cursor:pointer;">+ Start empty workout</div>
+      </div>
+
+      <!-- Active session -->
+      <div id="activeSession" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div>
+            <div style="font-size:16px;font-weight:800;" id="sessionName">Workout</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);" id="sessionTimer">0:00</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div onclick="addExerciseToSession()" style="background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;">+ Exercise</div>
+            <div onclick="finishSession()" style="background:var(--green);color:white;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;">Finish</div>
+          </div>
+        </div>
+        <div id="sessionExercises"></div>
+        <div style="margin-top:12px;">
+          <textarea id="sessionNotes" placeholder="Session notes..." style="width:100%;padding:10px;border:0.5px solid var(--border);border-radius:10px;background:var(--surface);font-family:'Syne',sans-serif;font-size:12px;color:var(--text);outline:none;resize:none;min-height:60px;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATES TAB -->
+  <div id="wo-templates" class="wo-section" style="display:none;">
+    <div style="padding:16px 16px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;">My Templates</div>
+        <div onclick="openTemplateModal()" style="background:var(--accent);color:white;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">+ New</div>
+      </div>
+      <div id="templatesList"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- MEASURE TAB -->
+  <div id="wo-measure" class="wo-section" style="display:none;">
+    <div style="padding:16px 16px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;">Measurements</div>
+        <div onclick="saveMeasurements()" style="background:var(--accent);color:white;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">Save</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">CORE</div>
+      <div class="measure-card">
+        <div class="measure-row"><span class="measure-label">Weight</span><input class="measure-input" id="m-weight" type="number" step="0.1" placeholder="—"><span class="measure-unit">kg</span></div>
+        <div class="measure-row"><span class="measure-label">Body Fat</span><input class="measure-input" id="m-bf" type="number" step="0.1" placeholder="—"><span class="measure-unit">%</span></div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin:12px 0 8px;">BODY PARTS (cm)</div>
+      <div class="measure-card">
+        <div class="measure-row"><span class="measure-label">Neck</span><input class="measure-input" id="m-neck" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Shoulders</span><input class="measure-input" id="m-shoulders" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Chest</span><input class="measure-input" id="m-chest" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Left Bicep</span><input class="measure-input" id="m-lbicep" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Right Bicep</span><input class="measure-input" id="m-rbicep" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Left Forearm</span><input class="measure-input" id="m-lforearm" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Right Forearm</span><input class="measure-input" id="m-rforearm" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Upper Abs</span><input class="measure-input" id="m-upperabs" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Waist</span><input class="measure-input" id="m-waist" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Lower Abs</span><input class="measure-input" id="m-lowerabs" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Hips</span><input class="measure-input" id="m-hips" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Left Thigh</span><input class="measure-input" id="m-lthigh" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Right Thigh</span><input class="measure-input" id="m-rthigh" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Left Calf</span><input class="measure-input" id="m-lcalf" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+        <div class="measure-row"><span class="measure-label">Right Calf</span><input class="measure-input" id="m-rcalf" type="number" step="0.1" placeholder="—"><span class="measure-unit">cm</span></div>
+      </div>
+      <div style="margin-top:16px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">LAST LOGGED</div>
+      <div id="lastMeasurements" style="font-size:12px;color:var(--text2);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATE MODAL -->
+<div id="templateModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);" onclick="if(event.target===this)closeTemplateModal()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 40px;max-height:92vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-size:16px;font-weight:800;">New Template</div>
+      <div onclick="closeTemplateModal()" style="font-size:20px;cursor:pointer;color:var(--text3);">×</div>
+    </div>
+    <input id="tpl-name" placeholder="Template name (e.g. Push A)" style="width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);outline:none;margin-bottom:12px;">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">EXERCISES</div>
+    <div id="tplExerciseList"></div>
+    <div onclick="addTplExercise()" style="padding:10px;border:0.5px dashed var(--border2);border-radius:10px;text-align:center;font-size:12px;color:var(--text3);cursor:pointer;margin-bottom:16px;">+ Add exercise</div>
+    <button onclick="saveTemplate()" style="width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Save Template</button>
+  </div>
+</div>
+
+<!-- ADD EXERCISE MODAL -->
+<div id="addExModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);" onclick="if(event.target===this)closeAddExModal()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 40px;max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:16px;font-weight:800;">Add Exercise</div>
+      <div onclick="closeAddExModal()" style="font-size:20px;cursor:pointer;color:var(--text3);">×</div>
+    </div>
+    <input id="exSearchInput" placeholder="Search or type exercise name..." oninput="renderExSearch()" style="width:100%;padding:10px 14px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;color:var(--text);outline:none;margin-bottom:12px;">
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">MUSCLE GROUP</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;" id="muscleFilter"></div>
+    <div id="exSearchResults"></div>
+    <button onclick="addCustomExercise()" style="width:100%;margin-top:10px;padding:11px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);">+ Add as custom exercise</button>
+  </div>
+</div>
+
+<!-- REST TIMER -->
+<div id="restTimer" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:10px 20px;border-radius:20px;font-family:'DM Mono',monospace;font-size:14px;font-weight:500;z-index:400;align-items:center;gap:12px;">
+  <span>Rest</span><span id="restTimerCount">2:00</span><span onclick="skipRest()" style="font-size:11px;opacity:0.6;cursor:pointer;">skip</span>
+</div>
+
+<!-- TASKS PAGE -->
+<div class="page" id="page-tasks">
+  <div class="header" style="padding-bottom:10px;">
+    <div class="header-row" style="margin-bottom:8px;">
+      <div class="header-title">Tasks</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div id="taskStats" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);"></div>
+        <button onclick="openTaskModal()" style="background:var(--accent);color:white;border:none;border-radius:8px;width:28px;height:28px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">+</button>
+      </div>
+    </div>
+    <!-- Search -->
+    <div style="position:relative;margin-bottom:8px;">
+      <input id="taskSearch" placeholder="Search tasks..." oninput="renderTasks()" style="width:100%;padding:8px 12px 8px 30px;border:0.5px solid var(--border);border-radius:10px;background:var(--surface);font-family:'Syne',sans-serif;font-size:12px;color:var(--text);outline:none;">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text3);">🔍</span>
+    </div>
+    <!-- Filters row -->
+    <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">All</div>
+      <div class="filter-chip" data-filter="today" onclick="setFilter('today',this)">📅 Today</div>
+      <div class="filter-chip" data-filter="overdue" onclick="setFilter('overdue',this)">🔥 Overdue</div>
+      <div class="filter-chip" data-filter="active" onclick="setFilter('active',this)">Active</div>
+      <div class="filter-chip" data-filter="done" onclick="setFilter('done',this)">Done</div>
+      <div class="filter-chip" data-filter="high" onclick="setFilter('high',this)">🔴 High</div>
+      <div class="filter-chip" data-filter="health" onclick="setFilter('health',this)">🏥 Health</div>
+      <div class="filter-chip" data-filter="business" onclick="setFilter('business',this)">💼 Business</div>
+      <div class="filter-chip" data-filter="personal" onclick="setFilter('personal',this)">👤 Personal</div>
+      <div class="filter-chip" data-filter="training" onclick="setFilter('training',this)">🏋️ Training</div>
+      <div class="filter-chip" data-filter="finance" onclick="setFilter('finance',this)">💰 Finance</div>
+    </div>
+    <!-- Sort row -->
+    <div style="display:flex;gap:6px;align-items:center;margin-top:8px;">
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">SORT</span>
+      <select id="taskSort" onchange="renderTasks()" style="border:0.5px solid var(--border);border-radius:8px;background:var(--surface);font-family:'DM Mono',monospace;font-size:10px;color:var(--text2);padding:4px 8px;outline:none;">
+        <option value="created">Newest first</option>
+        <option value="due">Due date</option>
+        <option value="priority">Priority</option>
+        <option value="status">Status</option>
+      </select>
+      <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);" id="taskFilterLabel">showing all</div>
+    </div>
+  </div>
+
+  <div id="taskList" style="padding:10px 16px 0;display:flex;flex-direction:column;gap:8px;"><div class="loading">Loading...</div></div>
+</div>
+
+<!-- TASK MODAL -->
+<div id="taskModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);" onclick="if(event.target===this)closeTaskModal()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 40px;max-height:92vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-size:16px;font-weight:800;" id="modalTitle">New Task</div>
+      <div onclick="closeTaskModal()" style="font-size:20px;cursor:pointer;color:var(--text3);padding:4px 8px;">×</div>
+    </div>
+
+    <input id="mt-title" placeholder="Task title *" style="width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);outline:none;margin-bottom:10px;">
+
+    <textarea id="mt-desc" placeholder="Description / notes..." style="width:100%;padding:10px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;min-height:70px;margin-bottom:10px;"></textarea>
+
+    <!-- Row 1: Priority + Status -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">PRIORITY</div>
+        <select id="mt-priority" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Syne',sans-serif;font-size:12px;color:var(--text);outline:none;">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🟠 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">STATUS</div>
+        <select id="mt-status" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Syne',sans-serif;font-size:12px;color:var(--text);outline:none;">
+          <option value="not_started">⚪ Not started</option>
+          <option value="in_progress">🔵 In progress</option>
+          <option value="blocked">🔴 Blocked</option>
+          <option value="done">✅ Done</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 2: Category -->
+    <div style="margin-bottom:10px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">CATEGORY</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <div class="cat-chip" data-cat="health" onclick="selectCat(this)">🏥 Health</div>
+        <div class="cat-chip" data-cat="business" onclick="selectCat(this)">💼 Business</div>
+        <div class="cat-chip selected" data-cat="personal" onclick="selectCat(this)">👤 Personal</div>
+        <div class="cat-chip" data-cat="training" onclick="selectCat(this)">🏋️ Training</div>
+        <div class="cat-chip" data-cat="finance" onclick="selectCat(this)">💰 Finance</div>
+        <div class="cat-chip" data-cat="followup" onclick="selectCat(this)">📞 Follow-up</div>
+        <div class="cat-chip" data-cat="errands" onclick="selectCat(this)">🛒 Errands</div>
+      </div>
+    </div>
+
+    <!-- Row 3: Due date + time -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">DUE DATE</div>
+        <input type="date" id="mt-due" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:11px;color:var(--text);outline:none;">
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">TIME</div>
+        <input type="time" id="mt-time" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:11px;color:var(--text);outline:none;">
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div style="margin-bottom:10px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">TAGS</div>
+      <input id="mt-tags" placeholder="doctor, jaipur, urgent — comma separated" style="width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:11px;color:var(--text);outline:none;">
+    </div>
+
+    <!-- Recurring -->
+    <div style="margin-bottom:16px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">REPEAT</div>
+      <select id="mt-recur" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Syne',sans-serif;font-size:12px;color:var(--text);outline:none;">
+        <option value="">Never</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+
+    <!-- Subtasks -->
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">SUBTASKS</div>
+        <div onclick="addSubtaskField()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">+ add</div>
+      </div>
+      <div id="subtaskFields"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="closeTaskModal()" style="padding:12px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);">Cancel</button>
+      <button onclick="saveTask()" style="padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;" id="saveTaskBtn">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES PAGE -->
+<div class="page" id="page-notes">
+  <div class="header">
+    <div class="header-row">
+      <div class="header-title">Notes</div>
+      <div class="header-date" id="noteCount" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);"></div>
+    </div>
+  </div>
+
+  <div class="note-add">
+    <input class="note-title-input" id="noteTitle" placeholder="Title">
+    <textarea class="note-content-input" id="noteContent" placeholder="Write anything..."></textarea>
+    <div class="note-footer">
+      <input class="note-tags-input" id="noteTags" placeholder="tags, comma separated">
+      <button class="note-save-btn" onclick="saveNote()">Save</button>
+    </div>
+  </div>
+
+  <div class="notes-list" id="notesList"><div class="loading">Loading...</div></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-item active" onclick="switchPage('pills', this)">
+    <div class="nav-icon">💊</div>
+    <div class="nav-label">Pills</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('workout', this)">
+    <div class="nav-icon">🏋️</div>
+    <div class="nav-label">Workout</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('tasks', this)">
+    <div class="nav-icon">✅</div>
+    <div class="nav-label">Tasks</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('notes', this)">
+    <div class="nav-icon">📝</div>
+    <div class="nav-label">Notes</div>
+  </div>
+</nav>
+
+<script>
+// ─── SUPABASE ───────────────────────────────────────────────
+const SB_URL = 'https://ufymdkshjuybzarsztnp.supabase.co';
+const SB_KEY = 'sb_publishable_fbN6_-lF9Y0YNBcWbzPqsw_wsFsvHrR';
+
+async function sb(path, method='GET', body=null) {
+  const h = {
+    'Content-Type': 'application/json',
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+  };
+  if (method === 'POST') h['Prefer'] = 'return=representation';
+  if (method === 'DELETE') h['Prefer'] = 'return=minimal';
+  if (method === 'PATCH') h['Prefer'] = 'return=minimal';
+  const opts = { method, headers: h };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/' + path, opts);
+    if (!r.ok) { const e = await r.text(); console.error(e); return null; }
+    const t = await r.text();
+    return t ? JSON.parse(t) : [];
+  } catch(e) { console.error(e); return null; }
+}
+
+// ─── UTILS ──────────────────────────────────────────────────
+function today() { return new Date().toISOString().split('T')[0]; }
+
+async function sbUpsert(table, body) {
+  // Upsert: insert or update on conflict
+  const h = {
+    'Content-Type': 'application/json',
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Prefer': 'resolution=merge-duplicates,return=minimal',
+  };
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/' + table, {
+      method: 'POST',
+      headers: h,
+      body: JSON.stringify(body)
+    });
+    return r.ok;
+  } catch(e) { console.error('upsert error:', e); return false; }
+}
+
+function fmtDate(d) {
+  const dt = new Date(d);
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return days[dt.getDay()] + ' ' + dt.getDate() + ' ' + months[dt.getMonth()];
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function checkSVG() {
+  return `<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5L4.5 8.5L9.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+// ─── NAV ────────────────────────────────────────────────────
+function switchPage(name, el) {
+  try {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const page = document.getElementById('page-' + name);
+    if (page) page.classList.add('active');
+    if (el) el.classList.add('active');
+    if (name === 'workout') { loadWorkoutHistory(); loadTemplates(); }
+    if (name === 'tasks') loadTasks();
+    if (name === 'notes') loadNotes();
+  } catch(e) { console.error('switchPage error:', e); }
+}
+
+// ─── PILLS ──────────────────────────────────────────────────
+let pillState = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('pillDate').textContent = fmtDate(new Date());
+  try { loadPills(); } catch(e) { console.error('Init error:', e); }
+});
+
+async function loadPills() {
+  const data = await sb(`pill_logs?log_date=eq.${today()}&select=pill_id,taken`);
+  if (data) {
+    pillState = {};
+    data.forEach(row => { if (row.taken) pillState[row.pill_id] = true; });
+    renderPills();
+  }
+}
+
+function renderPills() {
+  document.querySelectorAll('.pill-card').forEach(card => {
+    const pid = card.dataset.pid;
+    if (pillState[pid]) card.classList.add('taken');
+    else card.classList.remove('taken');
+  });
+  updatePillProgress();
+}
+
+function updatePillProgress() {
+  const total = document.querySelectorAll('.pill-card').length;
+  const taken = document.querySelectorAll('.pill-card.taken').length;
+  const pct = total > 0 ? Math.round((taken/total)*100) : 0;
+  document.getElementById('pillProgress').style.width = pct + '%';
+  document.getElementById('pillCount').textContent = taken + ' / ' + total;
+  document.getElementById('pillProgress').style.background = pct === 100 ? 'var(--green)' : 'var(--accent)';
+}
+
+async function togglePill(card) {
+  const pid = card.dataset.pid;
+  const newVal = !pillState[pid];
+  pillState[pid] = newVal;
+  if (newVal) card.classList.add('taken'); else card.classList.remove('taken');
+  updatePillProgress();
+  // Use upsert — on conflict (same date + pill_id), update instead of insert
+  await sbUpsert('pill_logs', { log_date: today(), pill_id: pid, taken: newVal, updated_at: new Date().toISOString() });
+  if (newVal) showToast('✓ ' + card.querySelector('.pill-name').textContent);
+}
+
+// ─── WORKOUT ─────────────────────────────────────────────────
+const EXERCISES_DB = [
+  {name:'Bench Press (Barbell)',muscle:'Chest'},{name:'Bench Press (Dumbbell)',muscle:'Chest'},
+  {name:'Incline Bench Press (Barbell)',muscle:'Chest'},{name:'Incline Bench Press (Dumbbell)',muscle:'Chest'},
+  {name:'Cable Crossover',muscle:'Chest'},{name:'Chest Dip (Assisted)',muscle:'Chest'},
+  {name:'Around the World',muscle:'Chest'},{name:'Pec Deck',muscle:'Chest'},
+  {name:'Seated Overhead Press (Dumbbell)',muscle:'Shoulders'},{name:'Arnold Press (Dumbbell)',muscle:'Shoulders'},
+  {name:'Lateral Raise (Dumbbell)',muscle:'Shoulders'},{name:'Seated Lateral Raise',muscle:'Shoulders'},
+  {name:'Face Pull',muscle:'Shoulders'},{name:'Front Raise (Dumbbell)',muscle:'Shoulders'},
+  {name:'Tricep Rope Extension',muscle:'Triceps'},{name:'Overhead Tricep Extension',muscle:'Triceps'},
+  {name:'Skull Crusher (Barbell)',muscle:'Triceps'},{name:'Close Grip Bench Press',muscle:'Triceps'},
+  {name:'Tricep Pushdown',muscle:'Triceps'},
+  {name:'Bent Over Row (Barbell)',muscle:'Back'},{name:'Bent Over One Arm Row (Dumbbell)',muscle:'Back'},
+  {name:'Close Grip Lat Pull Down',muscle:'Back'},{name:'Seated Wide Row',muscle:'Back'},
+  {name:'Deadlift (Barbell)',muscle:'Back'},{name:'Back Extension',muscle:'Back'},
+  {name:'Back Extension (Machine)',muscle:'Back'},{name:'Lat Pulldown (Machine)',muscle:'Back'},
+  {name:'Alternate Dumbbell Curl',muscle:'Arms'},{name:'Barbell Curl',muscle:'Arms'},
+  {name:'Hammer Curl (Dumbbell)',muscle:'Arms'},{name:'Preacher Curl (Machine)',muscle:'Arms'},
+  {name:'Hack Squat',muscle:'Legs'},{name:'Leg Press',muscle:'Legs'},
+  {name:'Squat (Barbell)',muscle:'Legs'},{name:'Leg Extension (Machine)',muscle:'Legs'},
+  {name:'Lunge (Dumbbell)',muscle:'Legs'},{name:'Romanian Deadlift (Barbell)',muscle:'Legs'},
+  {name:'Hip Thrust Machine',muscle:'Legs'},{name:'Lying Leg Curl (Machine)',muscle:'Legs'},
+  {name:'Sumo Squat',muscle:'Legs'},{name:'Calf Raise (Machine)',muscle:'Legs'},
+  {name:'Ab Wheel',muscle:'Core'},{name:'Plank',muscle:'Core'},{name:'Hanging Leg Raise',muscle:'Core'},
+  {name:'Aerobics',muscle:'Cardio'},{name:'Battle Ropes',muscle:'Cardio'},{name:'Ball Slams',muscle:'Full Body'},
+];
+
+let activeSessionData = { name: 'Workout', exercises: [], startTime: null, timerInterval: null };
+let sessionRestTimer = null;
+let restTimerInterval = null;
+let addExTarget = null; // 'session' or 'template'
+let selectedMuscleFilter = 'All';
+let templates = [];
+let allMuscleGroups = ['All','Chest','Shoulders','Triceps','Back','Arms','Legs','Core','Cardio','Full Body'];
+
+function showWoTab(tab) {
+  ['history','log','templates','measure'].forEach(t => {
+    document.getElementById('wo-' + t).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('wo-tab-' + t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'history') loadWorkoutHistory();
+  if (tab === 'templates') loadTemplates();
+  if (tab === 'measure') loadLastMeasurements();
+  if (tab === 'log') renderTemplatePicker();
+}
+
+// ── HISTORY ──
+async function loadWorkoutHistory() {
+  const container = document.getElementById('workoutHistory');
+  container.innerHTML = '<div class="loading">Loading...</div>';
+  const sessions = await sb('workout_sessions?select=*&order=created_at.desc&limit=20');
+  if (!sessions || !sessions.length) {
+    container.innerHTML = '<div class="empty-state">No sessions yet.<br>Log your first workout.</div>';
+    return;
+  }
+  const setGroups = await sb(`session_sets?session_id=in.(${sessions.map(s=>`"${s.id}"`).join(',')})&select=*`);
+  const setsBySession = {};
+  (setGroups||[]).forEach(s => {
+    if (!setsBySession[s.session_id]) setsBySession[s.session_id] = [];
+    setsBySession[s.session_id].push(s);
+  });
+
+  container.innerHTML = sessions.map(sess => {
+    const sets = setsBySession[sess.id] || [];
+    const exMap = {};
+    sets.forEach(s => {
+      if (!exMap[s.exercise_name]) exMap[s.exercise_name] = [];
+      exMap[s.exercise_name].push(s);
+    });
+    const vol = sets.filter(s=>!s.is_warmup).reduce((a,s)=>a+(s.weight_kg||0)*(s.reps||0),0);
+    const prs = 0; // could compute later
+    const exRows = Object.entries(exMap).map(([name, exSets]) => {
+      const best = exSets.filter(s=>!s.is_warmup).sort((a,b)=>(b.weight_kg||0)-(a.weight_kg||0))[0];
+      const bestStr = best ? `${best.weight_kg||0}kg × ${best.reps||0}` : '';
+      return `<tr><td>${exSets.length} × ${name}</td><td>${bestStr}</td></tr>`;
+    }).join('');
+
+    return `
+    <div class="session-history-card">
+      <div class="sh-header">
+        <div>
+          <div class="sh-name">${sess.template_name || 'Workout'}</div>
+          <div class="sh-date">${fmtDate(sess.session_date)}</div>
+        </div>
+      </div>
+      <div class="sh-stats">
+        ${sess.duration_min ? `<div class="sh-stat">⏱ <span>${sess.duration_min}m</span></div>` : ''}
+        <div class="sh-stat">⚖️ <span>${Math.round(vol)}kg</span></div>
+        <div class="sh-stat">🏋️ <span>${Object.keys(exMap).length} exercises</span></div>
+      </div>
+      <table class="sh-ex-table">${exRows}</table>
+    </div>`;
+  }).join('');
+}
+
+// ── TEMPLATES ──
+async function loadTemplates() {
+  const container = document.getElementById('templatesList');
+  container.innerHTML = '<div class="loading">Loading...</div>';
+  templates = await sb('workout_templates?select=*,template_exercises(*)&order=created_at.desc') || [];
+  renderTemplatesList();
+  renderTemplatePicker();
+}
+
+function renderTemplatesList() {
+  const container = document.getElementById('templatesList');
+  if (!templates.length) {
+    container.innerHTML = '<div class="empty-state">No templates yet.<br>Create your workout splits.</div>';
+    return;
+  }
+  container.innerHTML = templates.map(t => {
+    const exList = (t.template_exercises || []).sort((a,b)=>a.position-b.position).map(e=>e.exercise_name).join(', ');
+    return `
+    <div class="template-card">
+      <div class="template-name">${t.name}</div>
+      <div class="template-exercises">${exList || 'No exercises yet'}</div>
+      <div class="template-actions">
+        <div class="template-action start" onclick="startFromTemplate('${t.id}')">▶ Start</div>
+        <div class="template-action" onclick="deleteTemplate('${t.id}')">🗑 Delete</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTemplatePicker() {
+  const container = document.getElementById('templatePickerList');
+  if (!container) return;
+  container.innerHTML = templates.map(t =>
+    `<div onclick="startFromTemplate('${t.id}')" style="padding:7px 14px;background:var(--surface);border:0.5px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;">${t.name}</div>`
+  ).join('');
+}
+
+function openTemplateModal() { document.getElementById('templateModal').style.display='block'; document.getElementById('tplExerciseList').innerHTML=''; document.getElementById('tpl-name').value=''; }
+function closeTemplateModal() { document.getElementById('templateModal').style.display='none'; }
+
+function addTplExercise() {
+  addExTarget = 'template';
+  openAddExModal();
+}
+
+function addExerciseToSession() {
+  addExTarget = 'session';
+  openAddExModal();
+}
+
+function openAddExModal() {
+  selectedMuscleFilter = 'All';
+  document.getElementById('exSearchInput').value = '';
+  document.getElementById('addExModal').style.display = 'block';
+  renderMuscleFilterChips();
+  renderExSearch();
+}
+
+function closeAddExModal() { document.getElementById('addExModal').style.display='none'; }
+
+function renderMuscleFilterChips() {
+  const container = document.getElementById('muscleFilter');
+  container.innerHTML = allMuscleGroups.map(m =>
+    `<div onclick="setMuscleFilter('${m}',this)" style="padding:4px 10px;border-radius:20px;border:0.5px solid var(--border);background:${m===selectedMuscleFilter?'var(--accent)':'var(--surface)'};color:${m===selectedMuscleFilter?'white':'var(--text2)'};font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;">${m}</div>`
+  ).join('');
+}
+
+function setMuscleFilter(m) {
+  selectedMuscleFilter = m;
+  renderMuscleFilterChips();
+  renderExSearch();
+}
+
+function renderExSearch() {
+  const q = (document.getElementById('exSearchInput')?.value || '').toLowerCase();
+  const container = document.getElementById('exSearchResults');
+  let list = [...EXERCISES_DB];
+  if (selectedMuscleFilter !== 'All') list = list.filter(e => e.muscle === selectedMuscleFilter);
+  if (q) list = list.filter(e => e.name.toLowerCase().includes(q));
+  container.innerHTML = list.slice(0,20).map(e => `
+    <div class="ex-result" onclick="selectExercise('${e.name}','${e.muscle}')">
+      <div><div class="ex-result-name">${e.name}</div><div class="ex-result-muscle">${e.muscle}</div></div>
+      <div class="ex-add-btn">+</div>
+    </div>`).join('');
+}
+
+function addCustomExercise() {
+  const name = document.getElementById('exSearchInput').value.trim();
+  if (!name) { showToast('Type an exercise name first'); return; }
+  selectExercise(name, selectedMuscleFilter === 'All' ? 'Other' : selectedMuscleFilter);
+}
+
+function selectExercise(name, muscle) {
+  closeAddExModal();
+  if (addExTarget === 'template') {
+    const container = document.getElementById('tplExerciseList');
+    const pos = container.children.length;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border);';
+    row.dataset.name = name;
+    row.dataset.muscle = muscle;
+    row.innerHTML = `<div style="flex:1;"><div style="font-size:13px;font-weight:600;">${name}</div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);">${muscle}</div></div><input type="number" value="3" min="1" max="10" style="width:40px;padding:4px;border:0.5px solid var(--border);border-radius:6px;text-align:center;font-size:12px;outline:none;" title="sets"><div onclick="this.parentElement.remove()" style="font-size:18px;color:var(--text3);cursor:pointer;padding:4px;">×</div>`;
+    container.appendChild(row);
+  } else if (addExTarget === 'session') {
+    addExerciseBlock(name, muscle);
+  }
+}
+
+async function saveTemplate() {
+  const name = document.getElementById('tpl-name').value.trim();
+  if (!name) { showToast('Template name required'); return; }
+  const rows = document.querySelectorAll('#tplExerciseList > div');
+  const res = await sb('workout_templates?select=id', 'POST', { name, created_at: new Date().toISOString() });
+  const tplId = Array.isArray(res) && res[0] ? res[0].id : null;
+  if (!tplId) { showToast('Error saving template'); return; }
+  const exercises = [];
+  rows.forEach((row, i) => {
+    const sets = parseInt(row.querySelector('input')?.value) || 3;
+    exercises.push({ template_id: tplId, exercise_name: row.dataset.name, muscle_group: row.dataset.muscle, default_sets: sets, position: i });
+  });
+  if (exercises.length) await sb('template_exercises', 'POST', exercises);
+  closeTemplateModal();
+  showToast('✓ Template saved');
+  loadTemplates();
+}
+
+async function deleteTemplate(id) {
+  if (!confirm('Delete this template?')) return;
+  await sb(`workout_templates?id=eq.${id}`, 'DELETE');
+  showToast('🗑 Template deleted');
+  loadTemplates();
+}
+
+// ── SESSION ──
+function startBlankSession() {
+  beginSession('Workout', []);
+}
+
+function startFromTemplate(tplId) {
+  const tpl = templates.find(t => t.id === tplId);
+  if (!tpl) return;
+  const exercises = (tpl.template_exercises || []).sort((a,b)=>a.position-b.position);
+  beginSession(tpl.name, exercises);
+  showWoTab('log');
+}
+
+function beginSession(name, exercises) {
+  activeSessionData = { name, exercises: [], startTime: Date.now(), sessionId: null };
+  document.getElementById('sessionName').textContent = name;
+  document.getElementById('sessionExercises').innerHTML = '';
+  document.getElementById('activeSession').style.display = 'block';
+
+  exercises.forEach(ex => addExerciseBlock(ex.exercise_name, ex.muscle_group, ex.default_sets));
+
+  if (activeSessionData.timerInterval) clearInterval(activeSessionData.timerInterval);
+  activeSessionData.timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - activeSessionData.startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    document.getElementById('sessionTimer').textContent = m + ':' + String(s).padStart(2,'0');
+  }, 1000);
+}
+
+function addExerciseBlock(name, muscle, defaultSets = 3) {
+  const container = document.getElementById('sessionExercises');
+  const exId = 'ex-' + Date.now() + Math.random().toString(36).slice(2,5);
+  const block = document.createElement('div');
+  block.className = 'session-exercise';
+  block.id = exId;
+  block.innerHTML = `
+    <div class="session-ex-header">
+      <div>
+        <div class="session-ex-name">${name}</div>
+        <div class="session-ex-muscle">${muscle||''}</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div onclick="addWarmupSet('${exId}')" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);cursor:pointer;">+W</div>
+        <div onclick="addSetToEx('${exId}')" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--blue);cursor:pointer;">+Set</div>
+        <div onclick="document.getElementById('${exId}').remove()" style="font-size:14px;color:var(--text3);cursor:pointer;">×</div>
+      </div>
+    </div>
+    <div class="set-header-row">
+      <div class="set-header-label">Set</div>
+      <div class="set-header-label">Previous</div>
+      <div class="set-header-label">kg</div>
+      <div class="set-header-label">Reps</div>
+      <div class="set-header-label"></div>
+    </div>
+    <div class="set-rows" id="sets-${exId}"></div>
+    <div class="add-set-btn" onclick="addSetToEx('${exId}')">+ Add Set</div>
+  `;
+  container.appendChild(block);
+
+  // pre-fill previous performance
+  getPreviousPerformance(name).then(prev => {
+    for (let i = 0; i < defaultSets; i++) {
+      const p = prev[i] || null;
+      addSetRow(exId, name, muscle, i+1, false, p);
+    }
+  });
+}
+
+async function getPreviousPerformance(exName) {
+  const encoded = encodeURIComponent(exName);
+  const data = await sb(`session_sets?exercise_name=eq.${encoded}&is_warmup=eq.false&order=created_at.desc&limit=10&select=weight_kg,reps`);
+  return data || [];
+}
+
+function addSetRow(exId, exName, muscle, setNum, isWarmup=false, prev=null) {
+  const container = document.getElementById('sets-' + exId);
+  if (!container) return;
+  const rowId = 'row-' + Date.now() + Math.random().toString(36).slice(2,5);
+  const prevStr = prev ? `${prev.weight_kg||0}kg×${prev.reps||0}` : '—';
+  const row = document.createElement('div');
+  row.className = 'set-row' + (isWarmup ? ' warmup' : '');
+  row.id = rowId;
+  row.dataset.exName = exName;
+  row.dataset.muscle = muscle;
+  row.dataset.warmup = isWarmup ? '1' : '0';
+  row.innerHTML = `
+    <div class="set-num ${isWarmup?'is-warmup':''}">${isWarmup?'W':setNum}</div>
+    <div class="set-prev">${prevStr}</div>
+    <input class="set-input" type="number" step="0.5" placeholder="${prev?prev.weight_kg||'':''}" inputmode="decimal">
+    <input class="set-input" type="number" placeholder="${prev?prev.reps||'':''}" inputmode="numeric">
+    <div class="set-check" onclick="toggleSetDone(this,'${rowId}','${exId}')">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  `;
+  container.appendChild(row);
+}
+
+function addSetToEx(exId) {
+  const block = document.getElementById(exId);
+  const exName = block.querySelector('.session-ex-name').textContent;
+  const muscle = block.querySelector('.session-ex-muscle').textContent;
+  const rows = block.querySelectorAll('.set-row:not(.warmup)');
+  addSetRow(exId, exName, muscle, rows.length + 1, false, null);
+}
+
+function addWarmupSet(exId) {
+  const block = document.getElementById(exId);
+  const exName = block.querySelector('.session-ex-name').textContent;
+  const muscle = block.querySelector('.session-ex-muscle').textContent;
+  addSetRow(exId, exName, muscle, 0, true, null);
+}
+
+function toggleSetDone(btn, rowId, exId) {
+  const row = document.getElementById(rowId);
+  const isDone = btn.classList.contains('done');
+  btn.classList.toggle('done', !isDone);
+  row.classList.toggle('completed', !isDone);
+  if (!isDone) startRestTimer(120);
+}
+
+// REST TIMER
+function startRestTimer(seconds) {
+  if (restTimerInterval) clearInterval(restTimerInterval);
+  let remaining = seconds;
+  const el = document.getElementById('restTimer');
+  const count = document.getElementById('restTimerCount');
+  el.style.display = 'flex';
+  count.textContent = formatRestTime(remaining);
+  restTimerInterval = setInterval(() => {
+    remaining--;
+    count.textContent = formatRestTime(remaining);
+    if (remaining <= 0) skipRest();
+  }, 1000);
+}
+
+function skipRest() {
+  if (restTimerInterval) clearInterval(restTimerInterval);
+  document.getElementById('restTimer').style.display = 'none';
+}
+
+function formatRestTime(s) {
+  return Math.floor(s/60) + ':' + String(Math.max(0,s%60)).padStart(2,'0');
+}
+
+async function finishSession() {
+  if (!confirm('Finish this workout?')) return;
+  skipRest();
+  if (activeSessionData.timerInterval) clearInterval(activeSessionData.timerInterval);
+  const durationMin = Math.round((Date.now() - activeSessionData.startTime) / 60000);
+
+  // collect all sets
+  const allSetRows = document.querySelectorAll('#sessionExercises .set-row');
+  let totalVolume = 0;
+  const setsToSave = [];
+
+  allSetRows.forEach((row, i) => {
+    const inputs = row.querySelectorAll('.set-input');
+    const kg = parseFloat(inputs[0]?.value) || 0;
+    const reps = parseInt(inputs[1]?.value) || 0;
+    const isWarmup = row.dataset.warmup === '1';
+    if (!isWarmup) totalVolume += kg * reps;
+    setsToSave.push({
+      exercise_name: row.dataset.exName,
+      muscle_group: row.dataset.muscle,
+      set_number: i+1,
+      weight_kg: kg,
+      reps,
+      is_warmup: isWarmup,
+    });
+  });
+
+  const sessionRes = await sb('workout_sessions?select=id', 'POST', {
+    session_date: today(),
+    template_name: activeSessionData.name,
+    duration_min: durationMin,
+    total_volume_kg: Math.round(totalVolume),
+    notes: document.getElementById('sessionNotes')?.value || null,
+    created_at: new Date().toISOString()
+  });
+
+  const sessionId = Array.isArray(sessionRes) && sessionRes[0] ? sessionRes[0].id : null;
+
+  if (sessionId && setsToSave.length) {
+    const withId = setsToSave.map(s => ({...s, session_id: sessionId, created_at: new Date().toISOString()}));
+    await sb('session_sets', 'POST', withId);
+  }
+
+  document.getElementById('activeSession').style.display = 'none';
+  showToast(`🏋️ Done! ${durationMin}min · ${Math.round(totalVolume)}kg`);
+  showWoTab('history');
+}
+
+// ── MEASUREMENTS ──
+async function loadLastMeasurements() {
+  const data = await sb('measurements?select=*&order=measured_date.desc&limit=1');
+  const container = document.getElementById('lastMeasurements');
+  if (!data || !data.length) { container.innerHTML = '<div style="color:var(--text3);font-family:DM Mono,monospace;font-size:10px;">No measurements logged yet.</div>'; return; }
+  const m = data[0];
+  container.innerHTML = `
+    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:12px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px;">${fmtDate(m.measured_date)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;">
+        ${m.weight_kg ? `<div>⚖️ <b>${m.weight_kg}kg</b></div>` : ''}
+        ${m.body_fat_pct ? `<div>🔥 <b>${m.body_fat_pct}%</b> fat</div>` : ''}
+        ${m.waist_cm ? `<div>📏 Waist <b>${m.waist_cm}cm</b></div>` : ''}
+        ${m.chest_cm ? `<div>Chest <b>${m.chest_cm}cm</b></div>` : ''}
+        ${m.left_bicep_cm ? `<div>L Bicep <b>${m.left_bicep_cm}cm</b></div>` : ''}
+        ${m.right_bicep_cm ? `<div>R Bicep <b>${m.right_bicep_cm}cm</b></div>` : ''}
+      </div>
+    </div>`;
+}
+
+async function saveMeasurements() {
+  const payload = {
+    measured_date: today(),
+    weight_kg: parseFloat(document.getElementById('m-weight').value)||null,
+    body_fat_pct: parseFloat(document.getElementById('m-bf').value)||null,
+    neck_cm: parseFloat(document.getElementById('m-neck').value)||null,
+    shoulders_cm: parseFloat(document.getElementById('m-shoulders').value)||null,
+    chest_cm: parseFloat(document.getElementById('m-chest').value)||null,
+    left_bicep_cm: parseFloat(document.getElementById('m-lbicep').value)||null,
+    right_bicep_cm: parseFloat(document.getElementById('m-rbicep').value)||null,
+    left_forearm_cm: parseFloat(document.getElementById('m-lforearm').value)||null,
+    right_forearm_cm: parseFloat(document.getElementById('m-rforearm').value)||null,
+    upper_abs_cm: parseFloat(document.getElementById('m-upperabs').value)||null,
+    waist_cm: parseFloat(document.getElementById('m-waist').value)||null,
+    lower_abs_cm: parseFloat(document.getElementById('m-lowerabs').value)||null,
+    hips_cm: parseFloat(document.getElementById('m-hips').value)||null,
+    left_thigh_cm: parseFloat(document.getElementById('m-lthigh').value)||null,
+    right_thigh_cm: parseFloat(document.getElementById('m-rthigh').value)||null,
+    left_calf_cm: parseFloat(document.getElementById('m-lcalf').value)||null,
+    right_calf_cm: parseFloat(document.getElementById('m-rcalf').value)||null,
+    created_at: new Date().toISOString()
+  };
+  await sb('measurements', 'POST', payload);
+  showToast('✓ Measurements saved');
+  loadLastMeasurements();
+}
+
+// ─── TASKS ───────────────────────────────────────────────────
+let allTasks = [];
+let currentFilter = 'all';
+let editingTaskId = null;
+let selectedCat = 'personal';
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderTasks();
+}
+
+async function loadTasks() {
+  const data = await sb('tasks?select=*&order=created_at.desc');
+  allTasks = data || [];
+  renderTasks();
+  updateTaskStats();
+}
+
+function updateTaskStats() {
+  const active = allTasks.filter(t => !t.completed).length;
+  const overdue = allTasks.filter(t => !t.completed && t.due_date && t.due_date < today()).length;
+  let txt = active + ' active';
+  if (overdue > 0) txt += ' · ' + overdue + ' overdue';
+  document.getElementById('taskStats').textContent = txt;
+}
+
+function getPriorityOrder(p) { return p === 'high' ? 0 : p === 'medium' ? 1 : 2; }
+function getStatusOrder(s) { return s === 'blocked' ? 0 : s === 'in_progress' ? 1 : s === 'not_started' ? 2 : 3; }
+
+function renderTasks() {
+  const container = document.getElementById('taskList');
+  const search = (document.getElementById('taskSearch')?.value || '').toLowerCase();
+  const sort = document.getElementById('taskSort')?.value || 'created';
+
+  let filtered = [...allTasks];
+
+  // filter
+  if (currentFilter === 'today') filtered = filtered.filter(t => t.due_date === today() && !t.completed);
+  else if (currentFilter === 'overdue') filtered = filtered.filter(t => !t.completed && t.due_date && t.due_date < today());
+  else if (currentFilter === 'active') filtered = filtered.filter(t => !t.completed);
+  else if (currentFilter === 'done') filtered = filtered.filter(t => t.completed);
+  else if (currentFilter === 'high') filtered = filtered.filter(t => t.priority === 'high' && !t.completed);
+  else if (['health','business','personal','training','finance','followup','errands'].includes(currentFilter)) {
+    filtered = filtered.filter(t => t.category === currentFilter && !t.completed);
+  }
+
+  // search
+  if (search) filtered = filtered.filter(t =>
+    t.title.toLowerCase().includes(search) ||
+    (t.description || '').toLowerCase().includes(search) ||
+    (t.tags || []).some(tag => tag.toLowerCase().includes(search))
+  );
+
+  // sort
+  if (sort === 'priority') filtered.sort((a,b) => getPriorityOrder(a.priority) - getPriorityOrder(b.priority));
+  else if (sort === 'due') filtered.sort((a,b) => {
+    if (!a.due_date && !b.due_date) return 0;
+    if (!a.due_date) return 1;
+    if (!b.due_date) return -1;
+    return a.due_date.localeCompare(b.due_date);
+  });
+  else if (sort === 'status') filtered.sort((a,b) => getStatusOrder(a.status) - getStatusOrder(b.status));
+
+  // always push completed to bottom
+  filtered.sort((a,b) => (a.completed ? 1 : 0) - (b.completed ? 1 : 0));
+
+  const label = document.getElementById('taskFilterLabel');
+  if (label) label.textContent = filtered.length + ' tasks';
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state">Nothing here.<br>Tap + to add a task.</div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(t => {
+    const isOverdue = !t.completed && t.due_date && t.due_date < today();
+    const isDueToday = t.due_date === today();
+    const statusMap = { not_started: '⚪', in_progress: '🔵', blocked: '🔴', done: '✅' };
+    const catMap = { health:'🏥', business:'💼', personal:'👤', training:'🏋️', finance:'💰', followup:'📞', errands:'🛒' };
+
+    let dueStr = '';
+    if (t.due_date) {
+      if (isOverdue) dueStr = `<span class="tcn-due overdue">⚠ overdue ${fmtDate(t.due_date)}</span>`;
+      else if (isDueToday) dueStr = `<span class="tcn-due today">📅 today${t.due_time ? ' ' + t.due_time.slice(0,5) : ''}</span>`;
+      else dueStr = `<span class="tcn-due">${fmtDate(t.due_date)}${t.due_time ? ' ' + t.due_time.slice(0,5) : ''}</span>`;
+    }
+
+    const tags = (t.tags || []).map(tag => `<span class="tcn-tag">${tag}</span>`).join('');
+    const catIcon = catMap[t.category] || '👤';
+    const recurIcon = t.is_recurring ? ' 🔁' : '';
+
+    return `
+    <div class="task-card-new ${t.completed ? 'is-done' : ''} ${isOverdue ? 'is-overdue' : ''}" id="tc-${t.id}">
+      <div class="tcn-main" onclick="toggleExpandTask('${t.id}')">
+        <div class="priority-bar pb-${t.priority}"></div>
+        <div class="tcn-check" onclick="event.stopPropagation();completeTask('${t.id}')">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="tcn-body">
+          <div class="tcn-title">${catIcon} ${t.title}${recurIcon}</div>
+          <div class="tcn-meta">
+            <span class="status-dot">${statusMap[t.status] || '⚪'} ${(t.status||'').replace('_',' ')}</span>
+            ${dueStr}
+            ${tags}
+          </div>
+        </div>
+      </div>
+      <div class="tcn-expand" id="exp-${t.id}">
+        ${t.description ? `<div class="tcn-desc">${t.description}</div>` : ''}
+        <div id="subs-${t.id}"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);">Loading subtasks...</div></div>
+        <div class="tcn-actions">
+          <div class="tcn-action-btn" onclick="editTask('${t.id}')">✏️ Edit</div>
+          <div class="tcn-action-btn" onclick="changeStatus('${t.id}')">🔄 Status</div>
+          <div class="tcn-action-btn del" onclick="deleteTask('${t.id}')">🗑 Delete</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleExpandTask(id) {
+  const exp = document.getElementById('exp-' + id);
+  const isOpen = exp.classList.contains('open');
+  // close all
+  document.querySelectorAll('.tcn-expand').forEach(e => e.classList.remove('open'));
+  if (!isOpen) {
+    exp.classList.add('open');
+    loadSubtasks(id);
+  }
+}
+
+async function loadSubtasks(taskId) {
+  const container = document.getElementById('subs-' + taskId);
+  if (!container) return;
+  const data = await sb(`subtasks?task_id=eq.${taskId}&order=position.asc`);
+  if (!data || !data.length) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = data.map(s => `
+    <div class="subtask-item ${s.completed ? 'done' : ''}" onclick="toggleSubtask('${s.id}','${taskId}')">
+      <div class="sub-check"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1 4.5L3.5 7L8 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="sub-title">${s.title}</div>
+    </div>
+  `).join('');
+}
+
+async function toggleSubtask(subId, taskId) {
+  const el = document.querySelector(`[onclick="toggleSubtask('${subId}','${taskId}')"]`);
+  if (!el) return;
+  const isDone = el.classList.contains('done');
+  await sb(`subtasks?id=eq.${subId}`, 'PATCH', { completed: !isDone });
+  loadSubtasks(taskId);
+}
+
+async function completeTask(id) {
+  const task = allTasks.find(t => t.id === id);
+  if (!task) return;
+  const newVal = !task.completed;
+  task.completed = newVal;
+  const now = new Date().toISOString();
+  await sb(`tasks?id=eq.${id}`, 'PATCH', {
+    completed: newVal,
+    status: newVal ? 'done' : 'not_started',
+    completed_at: newVal ? now : null,
+    updated_at: now
+  });
+  showToast(newVal ? '✅ Done!' : '↩ Reopened');
+  loadTasks();
+}
+
+async function deleteTask(id) {
+  if (!confirm('Delete this task?')) return;
+  await sb(`tasks?id=eq.${id}`, 'DELETE');
+  allTasks = allTasks.filter(t => t.id !== id);
+  renderTasks();
+  updateTaskStats();
+  showToast('🗑 Deleted');
+}
+
+async function changeStatus(id) {
+  const task = allTasks.find(t => t.id === id);
+  if (!task) return;
+  const statuses = ['not_started', 'in_progress', 'blocked', 'done'];
+  const next = statuses[(statuses.indexOf(task.status) + 1) % statuses.length];
+  task.status = next;
+  await sb(`tasks?id=eq.${id}`, 'PATCH', { status: next, updated_at: new Date().toISOString() });
+  renderTasks();
+  showToast('Status → ' + next.replace('_',' '));
+}
+
+// Modal
+function openTaskModal(id = null) {
+  editingTaskId = id;
+  document.getElementById('modalTitle').textContent = id ? 'Edit Task' : 'New Task';
+  document.getElementById('saveTaskBtn').textContent = id ? 'Update Task' : 'Save Task';
+
+  if (id) {
+    const t = allTasks.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('mt-title').value = t.title;
+    document.getElementById('mt-desc').value = t.description || '';
+    document.getElementById('mt-priority').value = t.priority;
+    document.getElementById('mt-status').value = t.status || 'not_started';
+    document.getElementById('mt-due').value = t.due_date || '';
+    document.getElementById('mt-time').value = t.due_time ? t.due_time.slice(0,5) : '';
+    document.getElementById('mt-tags').value = (t.tags || []).join(', ');
+    document.getElementById('mt-recur').value = t.recur_type || '';
+    selectedCat = t.category || 'personal';
+  } else {
+    document.getElementById('mt-title').value = '';
+    document.getElementById('mt-desc').value = '';
+    document.getElementById('mt-priority').value = 'medium';
+    document.getElementById('mt-status').value = 'not_started';
+    document.getElementById('mt-due').value = '';
+    document.getElementById('mt-time').value = '';
+    document.getElementById('mt-tags').value = '';
+    document.getElementById('mt-recur').value = '';
+    selectedCat = 'personal';
+    document.getElementById('subtaskFields').innerHTML = '';
+  }
+
+  document.querySelectorAll('.cat-chip').forEach(c => {
+    c.classList.toggle('selected', c.dataset.cat === selectedCat);
+  });
+
+  document.getElementById('taskModal').style.display = 'block';
+  setTimeout(() => document.getElementById('mt-title').focus(), 100);
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModal').style.display = 'none';
+  editingTaskId = null;
+}
+
+function selectCat(el) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCat = el.dataset.cat;
+}
+
+function addSubtaskField() {
+  const container = document.getElementById('subtaskFields');
+  const row = document.createElement('div');
+  row.className = 'subtask-input-row';
+  row.innerHTML = `<input placeholder="Subtask..." /><div class="sub-remove" onclick="this.parentElement.remove()">×</div>`;
+  container.appendChild(row);
+}
+
+async function editTask(id) {
+  openTaskModal(id);
+}
+
+async function saveTask() {
+  const title = document.getElementById('mt-title').value.trim();
+  if (!title) { showToast('Title required'); return; }
+
+  const tagsRaw = document.getElementById('mt-tags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const recurType = document.getElementById('mt-recur').value;
+  const dueTime = document.getElementById('mt-time').value || null;
+
+  const payload = {
+    title,
+    description: document.getElementById('mt-desc').value.trim() || null,
+    priority: document.getElementById('mt-priority').value,
+    status: document.getElementById('mt-status').value,
+    category: selectedCat,
+    due_date: document.getElementById('mt-due').value || null,
+    due_time: dueTime,
+    tags,
+    is_recurring: !!recurType,
+    recur_type: recurType || null,
+    updated_at: new Date().toISOString()
+  };
+
+  let taskId = editingTaskId;
+
+  if (editingTaskId) {
+    await sb(`tasks?id=eq.${editingTaskId}`, 'PATCH', payload);
+    showToast('✓ Task updated');
+  } else {
+    payload.completed = false;
+    payload.created_at = new Date().toISOString();
+    const res = await sb('tasks?select=id', 'POST', payload);
+    taskId = Array.isArray(res) && res[0] ? res[0].id : null;
+    showToast('✓ Task added');
+  }
+
+  // save subtasks
+  if (taskId && !editingTaskId) {
+    const inputs = document.querySelectorAll('#subtaskFields input');
+    const subtasks = [];
+    inputs.forEach((inp, i) => {
+      const t = inp.value.trim();
+      if (t) subtasks.push({ task_id: taskId, title: t, completed: false, position: i });
+    });
+    if (subtasks.length) await sb('subtasks', 'POST', subtasks);
+  }
+
+  closeTaskModal();
+  loadTasks();
+}
+
+// ─── NOTES ───────────────────────────────────────────────────
+let allNotes = [];
+
+async function loadNotes() {
+  const data = await sb('notes?select=*&order=updated_at.desc');
+  allNotes = data || [];
+  renderNotes();
+  document.getElementById('noteCount').textContent = allNotes.length + ' notes';
+}
+
+function renderNotes() {
+  const container = document.getElementById('notesList');
+  if (!allNotes.length) {
+    container.innerHTML = '<div class="empty-state">No notes yet.<br>Write your first one above.</div>';
+    return;
+  }
+  container.innerHTML = allNotes.map(n => `
+    <div class="note-card">
+      ${n.title ? `<div class="note-card-title">${n.title}</div>` : ''}
+      <div class="note-card-preview">${n.content}</div>
+      <div class="note-card-meta">${fmtDate(n.updated_at)} ${n.tags && n.tags.length ? '· ' + n.tags.join(', ') : ''}</div>
+    </div>
+  `).join('');
+}
+
+async function saveNote() {
+  const content = document.getElementById('noteContent').value.trim();
+  if (!content) return;
+  const title = document.getElementById('noteTitle').value.trim() || null;
+  const tagsRaw = document.getElementById('noteTags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const now = new Date().toISOString();
+  await sb('notes', 'POST', { title, content, tags, created_at: now, updated_at: now });
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteContent').value = '';
+  document.getElementById('noteTags').value = '';
+  showToast('✓ Note saved');
+  loadNotes();
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+// init handled in DOMContentLoaded above
+</script>
+</body>
+</html>
