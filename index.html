@@ -14,9 +14,9 @@
   --surface2: #eeebe6;
   --border: #e5e0d8;
   --border2: #d5cfc5;
-  --text: #1c1a17;
-  --text2: #7a7468;
-  --text3: #b0a898;
+  --text: #111008;
+  --text2: #4a4640;
+  --text3: #8a8278;
   --accent: #b8892e;
   --green: #4a8a4a;
   --blue: #3a7a9a;
@@ -203,9 +203,9 @@ body {
 .pill-card.taken .check svg { opacity: 1; }
 
 .pill-info { flex: 1; min-width: 0; }
-.pill-name { font-size: 13px; font-weight: 600; line-height: 1.3; transition: all 0.18s; }
-.pill-dose { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); margin-top: 1px; transition: all 0.18s; }
-.pill-note-text { font-size: 9px; color: var(--text3); margin-top: 2px; font-style: italic; }
+.pill-name { font-size: 15px; font-weight: 600; line-height: 1.3; transition: all 0.18s; }
+.pill-dose { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); margin-top: 1px; transition: all 0.18s; }
+.pill-note-text { font-size: 11px; color: var(--text3); margin-top: 2px; font-style: italic; }
 
 .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 .dot-med { background: var(--red); }
@@ -633,9 +633,9 @@ body {
 
 .note-card:active { transform: scale(0.99); }
 
-.note-card-title { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
-.note-card-preview { font-size: 12px; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.note-card-meta { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); margin-top: 8px; }
+.note-card-title { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.note-card-preview { font-size: 14px; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.note-card-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); margin-top: 8px; }
 
 /* TOAST */
 .toast {
@@ -990,7 +990,7 @@ select option { background: white; }
 .task-card-new.is-done .tcn-check svg { opacity: 1; }
 
 .tcn-body { flex: 1; min-width: 0; }
-.tcn-title { font-size: 13px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+.tcn-title { font-size: 15px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
 
 .tcn-meta {
   display: flex;
@@ -1001,14 +1001,14 @@ select option { background: white; }
 
 .tcn-tag {
   font-family: 'DM Mono', monospace;
-  font-size: 9px;
+  font-size: 11px;
   padding: 2px 7px;
   border-radius: 10px;
   border: 0.5px solid var(--border);
   color: var(--text3);
 }
 
-.tcn-due { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+.tcn-due { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
 .tcn-due.overdue { color: var(--red); font-weight: 500; }
 .tcn-due.today { color: var(--accent); font-weight: 500; }
 
@@ -1124,8 +1124,97 @@ select option { background: white; }
 
 <!-- PAGES -->
 
+<!-- DASHBOARD PAGE -->
+<div class="page active" id="page-dashboard">
+  <div class="header">
+    <div class="header-row">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:2px;" id="dashGreeting"></div>
+        <div class="header-title">Utkarsh OS</div>
+      </div>
+      <div class="header-date" id="dashDate"></div>
+    </div>
+  </div>
+
+  <!-- Pills summary -->
+  <div style="margin:16px 16px 0;">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Today's Pills</div>
+    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:15px;font-weight:700;" id="dashPillStatus">Loading...</div>
+        <div onclick="switchPage('pills',document.querySelectorAll('.nav-item')[3])" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">view all →</div>
+      </div>
+      <div style="background:var(--bg);border-radius:4px;height:4px;overflow:hidden;">
+        <div id="dashPillBar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 0.4s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overdue + today tasks -->
+  <div style="margin:14px 16px 0;">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Action Required</div>
+    <div id="dashTasks"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- Habits -->
+  <div style="margin:14px 16px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;">Daily Habits</div>
+      <div onclick="openHabitModal()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">+ add</div>
+    </div>
+    <div id="dashHabits"><div class="loading">Loading...</div></div>
+  </div>
+
+  <!-- Health affirmations -->
+  <div style="margin:14px 16px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;">Health Anchors</div>
+      <div onclick="openAffirmationModal()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">+ add</div>
+    </div>
+    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;">
+      <div id="affirmationText" style="font-size:14px;font-weight:600;line-height:1.6;color:var(--text);"></div>
+      <div style="margin-top:10px;display:flex;gap:12px;align-items:center;">
+        <div onclick="nextAffirmation()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">next →</div>
+        <div id="affirmationDelete" onclick="deleteCurrentAffirmation()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);cursor:pointer;display:none;">🗑 delete</div>
+        <div id="affirmationSource" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+
+<!-- AFFIRMATION MODAL -->
+<div id="affirmationModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);" onclick="if(event.target===this)closeAffirmationModal()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 50px;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px;">Add Health Anchor</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:14px;">A fact, reminder, or reframe that helps when health anxiety spikes.</div>
+    <textarea id="affirmationInput" placeholder="e.g. My CRP is 0.46 — lowest in 12 months. The inflammation is resolving." style="width:100%;padding:12px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;resize:none;min-height:100px;margin-bottom:14px;"></textarea>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="closeAffirmationModal()" style="padding:12px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
+      <button onclick="saveAffirmation()" style="padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- HABIT MODAL -->
+<div id="habitModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);" onclick="if(event.target===this)closeHabitModal()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 50px;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:14px;">New Habit</div>
+    <input id="habitName" placeholder="Habit name (e.g. 10k steps, no sugar)" style="width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;margin-bottom:10px;">
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);display:flex;align-items:center;">Icon</div>
+      <input id="habitIcon" placeholder="emoji" style="width:60px;padding:8px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-size:20px;text-align:center;outline:none;">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="closeHabitModal()" style="padding:12px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
+      <button onclick="saveHabit()" style="padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- PILLS PAGE -->
-<div class="page active" id="page-pills">
+<div class="page" id="page-pills">
   <div class="header">
     <div class="header-row">
       <div class="header-title">Pills</div>
@@ -1577,7 +1666,7 @@ select option { background: white; }
     <textarea class="note-content-input" id="noteContent" placeholder="Write anything..."></textarea>
     <div class="note-footer">
       <input class="note-tags-input" id="noteTags" placeholder="tags, comma separated">
-      <button class="note-save-btn" onclick="saveNote()">Save</button>
+      <button class="note-save-btn" id="noteSaveBtn" onclick="saveNote()">Save</button>
     </div>
   </div>
 
@@ -1586,9 +1675,9 @@ select option { background: white; }
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-item active" onclick="switchPage('pills', this)">
-    <div class="nav-icon">💊</div>
-    <div class="nav-label">Pills</div>
+  <div class="nav-item active" onclick="switchPage('dashboard', this)">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Home</div>
   </div>
   <div class="nav-item" onclick="switchPage('workout', this)">
     <div class="nav-icon">🏋️</div>
@@ -1597,6 +1686,10 @@ select option { background: white; }
   <div class="nav-item" onclick="switchPage('tasks', this)">
     <div class="nav-icon">✅</div>
     <div class="nav-label">Tasks</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('pills', this)">
+    <div class="nav-icon">💊</div>
+    <div class="nav-label">Pills</div>
   </div>
   <div class="nav-item" onclick="switchPage('notes', this)">
     <div class="nav-icon">📝</div>
@@ -1675,9 +1768,11 @@ function switchPage(name, el) {
     const page = document.getElementById('page-' + name);
     if (page) page.classList.add('active');
     if (el) el.classList.add('active');
+    if (name === 'dashboard') loadDashboard();
     if (name === 'workout') { loadWorkoutHistory(); loadTemplates(); }
     if (name === 'tasks') loadTasks();
     if (name === 'notes') loadNotes();
+    if (name === 'pills') renderPills();
   } catch(e) { console.error('switchPage error:', e); }
 }
 
@@ -1686,7 +1781,12 @@ let pillState = {};
 
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('pillDate').textContent = fmtDate(new Date());
-  try { loadPills(); } catch(e) { console.error('Init error:', e); }
+  try {
+    loadPills().then(() => {
+      loadDashboard();
+      checkEODStatus();
+    });
+  } catch(e) { console.error('Init error:', e); }
 });
 
 async function loadPills() {
@@ -1722,9 +1822,14 @@ async function togglePill(card) {
   pillState[pid] = newVal;
   if (newVal) card.classList.add('taken'); else card.classList.remove('taken');
   updatePillProgress();
-  // Use upsert — on conflict (same date + pill_id), update instead of insert
   await sbUpsert('pill_logs', { log_date: today(), pill_id: pid, taken: newVal, updated_at: new Date().toISOString() });
-  if (newVal) showToast('✓ ' + card.querySelector('.pill-name').textContent);
+  if (newVal) {
+    showToast('✓ ' + card.querySelector('.pill-name').textContent);
+    if (pid === 'becozinc') {
+      localStorage.setItem('utos_becozinc_last', today());
+      checkEODStatus();
+    }
+  }
 }
 
 // ─── WORKOUT ─────────────────────────────────────────────────
@@ -2503,6 +2608,7 @@ async function saveTask() {
 
 // ─── NOTES ───────────────────────────────────────────────────
 let allNotes = [];
+let editingNoteId = null;
 
 async function loadNotes() {
   const data = await sb('notes?select=*&order=updated_at.desc');
@@ -2518,12 +2624,27 @@ function renderNotes() {
     return;
   }
   container.innerHTML = allNotes.map(n => `
-    <div class="note-card">
+    <div class="note-card" onclick="openEditNote('${n.id}')">
       ${n.title ? `<div class="note-card-title">${n.title}</div>` : ''}
       <div class="note-card-preview">${n.content}</div>
-      <div class="note-card-meta">${fmtDate(n.updated_at)} ${n.tags && n.tags.length ? '· ' + n.tags.join(', ') : ''}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <div class="note-card-meta">${fmtDate(n.updated_at)} ${n.tags && n.tags.length ? '· ' + n.tags.join(', ') : ''}</div>
+        <div onclick="event.stopPropagation();deleteNote('${n.id}')" style="font-size:11px;color:var(--text3);padding:2px 6px;cursor:pointer;">🗑</div>
+      </div>
     </div>
   `).join('');
+}
+
+function openEditNote(id) {
+  const n = allNotes.find(x => x.id === id);
+  if (!n) return;
+  editingNoteId = id;
+  document.getElementById('noteTitle').value = n.title || '';
+  document.getElementById('noteContent').value = n.content || '';
+  document.getElementById('noteTags').value = (n.tags || []).join(', ');
+  document.getElementById('noteSaveBtn').textContent = 'Update';
+  document.getElementById('noteTitle').focus();
+  window.scrollTo(0, 0);
 }
 
 async function saveNote() {
@@ -2533,12 +2654,249 @@ async function saveNote() {
   const tagsRaw = document.getElementById('noteTags').value.trim();
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
   const now = new Date().toISOString();
-  await sb('notes', 'POST', { title, content, tags, created_at: now, updated_at: now });
+
+  if (editingNoteId) {
+    await sb(`notes?id=eq.${editingNoteId}`, 'PATCH', { title, content, tags, updated_at: now });
+    showToast('✓ Note updated');
+    editingNoteId = null;
+    document.getElementById('noteSaveBtn').textContent = 'Save';
+  } else {
+    await sb('notes', 'POST', { title, content, tags, created_at: now, updated_at: now });
+    showToast('✓ Note saved');
+  }
   document.getElementById('noteTitle').value = '';
   document.getElementById('noteContent').value = '';
   document.getElementById('noteTags').value = '';
-  showToast('✓ Note saved');
   loadNotes();
+}
+
+async function deleteNote(id) {
+  if (!confirm('Delete this note?')) return;
+  await sb(`notes?id=eq.${id}`, 'DELETE');
+  allNotes = allNotes.filter(n => n.id !== id);
+  renderNotes();
+  showToast('🗑 Deleted');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────
+const AFFIRMATIONS = [
+  "UC is in remission. CRP 0.46 — best in 12 months. Your gut is healing.",
+  "No blood since January 2026. No urgency, no night stools. That is real stability.",
+  "The April episode was dietary + antibiotics — not a flare. Dr. Vijay Sharma confirmed this.",
+  "Mesacol is working. Indefinite maintenance is the right call for your biology.",
+  "You lost 3kg fat in 2 months while preserving muscle. The body composition trajectory is correct.",
+  "HbA1c 4.8% — your metabolic health is genuinely excellent despite being in a fat loss phase.",
+  "Hemoglobin recovered from 13.6 to 15.2. Your body is absorbing and building properly again.",
+  "Lipid panel is clean. Total cholesterol 143, LDL 83. Cardiovascular risk is low.",
+  "Thyroid is normal. TSH 2.32, mid-range. No thyroid issue affecting your energy or fat loss.",
+  "The axilla cyst is surgically resolved. Histopathology confirmed benign. That chapter is closed.",
+  "Symptom scanning after health events is a normal nervous system response — not a sign of disease.",
+  "Your spine is manageable with smart load. No major functional limitation at appropriate training loads.",
+  "18–20 gym sessions per month is elite consistency for someone managing UC. You are doing it.",
+  "The body scan anxiety is the amygdala, not the body. Mechanistic thinking is your antidote.",
+  "You are 30, in remission, building muscle, losing fat. The trajectory is right."
+];
+
+let affirmationIndex = 0;
+let customAffirmations = [];
+let allAffirmations = [...AFFIRMATIONS];
+let currentAffirmationIsCustom = false;
+let currentCustomAffirmationId = null;
+
+async function loadCustomAffirmations() {
+  const data = await sb("notes?tags=cs.{affirmation}&select=*&order=created_at.desc");
+  customAffirmations = data || [];
+  allAffirmations = [...customAffirmations.map(a => a.content), ...AFFIRMATIONS];
+}
+
+function showAffirmation(index) {
+  const text = allAffirmations[index];
+  document.getElementById('affirmationText').textContent = text;
+  // Check if it's custom (first N items are custom)
+  const isCustom = index < customAffirmations.length;
+  currentAffirmationIsCustom = isCustom;
+  currentCustomAffirmationId = isCustom ? customAffirmations[index].id : null;
+  const delBtn = document.getElementById('affirmationDelete');
+  const srcLabel = document.getElementById('affirmationSource');
+  if (delBtn) delBtn.style.display = isCustom ? 'block' : 'none';
+  if (srcLabel) srcLabel.textContent = isCustom ? 'your anchor' : 'preset';
+}
+
+function nextAffirmation() {
+  affirmationIndex = (affirmationIndex + 1) % allAffirmations.length;
+  showAffirmation(affirmationIndex);
+}
+
+async function deleteCurrentAffirmation() {
+  if (!currentCustomAffirmationId) return;
+  if (!confirm('Delete this anchor?')) return;
+  await sb(`notes?id=eq.${currentCustomAffirmationId}`, 'DELETE');
+  showToast('🗑 Anchor deleted');
+  await loadCustomAffirmations();
+  affirmationIndex = 0;
+  showAffirmation(0);
+}
+
+function openAffirmationModal() {
+  document.getElementById('affirmationInput').value = '';
+  document.getElementById('affirmationModal').style.display = 'block';
+  setTimeout(() => document.getElementById('affirmationInput').focus(), 100);
+}
+
+function closeAffirmationModal() {
+  document.getElementById('affirmationModal').style.display = 'none';
+}
+
+async function saveAffirmation() {
+  const content = document.getElementById('affirmationInput').value.trim();
+  if (!content) { showToast('Write something first'); return; }
+  const now = new Date().toISOString();
+  await sb('notes', 'POST', {
+    title: 'Health Anchor',
+    content,
+    tags: ['affirmation'],
+    created_at: now,
+    updated_at: now
+  });
+  showToast('✓ Anchor saved');
+  closeAffirmationModal();
+  await loadCustomAffirmations();
+  // Jump to the new one (first in list)
+  affirmationIndex = 0;
+  showAffirmation(0);
+}
+
+// ─── HABITS ──────────────────────────────────────────────────
+let allHabits = [];
+
+function openHabitModal() { document.getElementById('habitModal').style.display = 'block'; }
+function closeHabitModal() { document.getElementById('habitModal').style.display = 'none'; }
+
+async function saveHabit() {
+  const name = document.getElementById('habitName').value.trim();
+  if (!name) { showToast('Name required'); return; }
+  const icon = document.getElementById('habitIcon').value.trim() || '⭕';
+  // store in notes table with tag 'habit' as a simple hack — or use localStorage for habits
+  const habits = JSON.parse(localStorage.getItem('utos_habits') || '[]');
+  habits.push({ id: Date.now().toString(), name, icon, created: today() });
+  localStorage.setItem('utos_habits', JSON.stringify(habits));
+  document.getElementById('habitName').value = '';
+  document.getElementById('habitIcon').value = '';
+  closeHabitModal();
+  showToast('✓ Habit added');
+  loadHabits();
+}
+
+function loadHabits() {
+  allHabits = JSON.parse(localStorage.getItem('utos_habits') || '[]');
+  const todayLogs = JSON.parse(localStorage.getItem('utos_habit_logs_' + today()) || '{}');
+  const container = document.getElementById('dashHabits');
+  if (!allHabits.length) {
+    container.innerHTML = `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);">No habits yet. Tap + to add daily habits.</div>`;
+    return;
+  }
+  container.innerHTML = allHabits.map(h => {
+    const done = todayLogs[h.id];
+    return `
+    <div onclick="toggleHabit('${h.id}')" style="background:var(--surface);border:0.5px solid ${done ? 'var(--green)' : 'var(--border)'};border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:7px;cursor:pointer;transition:all 0.18s;${done ? 'opacity:0.7;' : ''}">
+      <div style="font-size:22px;">${h.icon}</div>
+      <div style="flex:1;font-size:14px;font-weight:600;${done ? 'text-decoration:line-through;color:var(--text3);' : ''}">${h.name}</div>
+      <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid ${done ? 'var(--green)' : 'var(--border2)'};background:${done ? 'var(--green)' : 'transparent'};display:flex;align-items:center;justify-content:center;">
+        ${done ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+      </div>
+      <div onclick="event.stopPropagation();deleteHabit('${h.id}')" style="font-size:12px;color:var(--text3);padding:2px 4px;">×</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleHabit(id) {
+  const key = 'utos_habit_logs_' + today();
+  const logs = JSON.parse(localStorage.getItem(key) || '{}');
+  logs[id] = !logs[id];
+  localStorage.setItem(key, JSON.stringify(logs));
+  loadHabits();
+  if (logs[id]) showToast('✓ Habit done!');
+}
+
+function deleteHabit(id) {
+  let habits = JSON.parse(localStorage.getItem('utos_habits') || '[]');
+  habits = habits.filter(h => h.id !== id);
+  localStorage.setItem('utos_habits', JSON.stringify(habits));
+  loadHabits();
+}
+
+async function loadDashboard() {
+  // Date + greeting
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dashGreeting').textContent = greeting;
+  document.getElementById('dashDate').textContent = fmtDate(new Date());
+
+  // Affirmation
+  await loadCustomAffirmations();
+  affirmationIndex = Math.floor(Math.random() * allAffirmations.length);
+  showAffirmation(affirmationIndex);
+
+  // Pills progress
+  const pillData = await sb(`pill_logs?log_date=eq.${today()}&select=pill_id,taken`);
+  const totalPills = document.querySelectorAll('.pill-card').length;
+  const takenPills = (pillData || []).filter(r => r.taken).length;
+  const pillPct = totalPills > 0 ? Math.round((takenPills / totalPills) * 100) : 0;
+  document.getElementById('dashPillStatus').textContent = pillPct === 100 ? '✅ All doses taken' : `${takenPills} / ${totalPills} taken`;
+  document.getElementById('dashPillBar').style.width = pillPct + '%';
+  document.getElementById('dashPillBar').style.background = pillPct === 100 ? 'var(--green)' : 'var(--accent)';
+
+  // Tasks - overdue + today
+  const tasks = await sb(`tasks?select=*&completed=eq.false&order=priority.asc`);
+  const actionable = (tasks || []).filter(t =>
+    t.due_date === today() || (t.due_date && t.due_date < today()) || t.priority === 'high'
+  ).slice(0, 5);
+
+  const dashTasks = document.getElementById('dashTasks');
+  if (!actionable.length) {
+    dashTasks.innerHTML = `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);">No urgent tasks. Clear slate 🎉</div>`;
+  } else {
+    dashTasks.innerHTML = actionable.map(t => {
+      const isOverdue = t.due_date && t.due_date < today();
+      const isToday = t.due_date === today();
+      const tagColor = isOverdue ? 'var(--red)' : isToday ? 'var(--accent)' : 'var(--text3)';
+      const tag = isOverdue ? '⚠ overdue' : isToday ? '📅 today' : '🔴 high';
+      return `
+      <div onclick="completeTask('${t.id}')" style="background:var(--surface);border:0.5px solid ${isOverdue ? 'rgba(192,64,64,0.25)' : 'var(--border)'};border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;cursor:pointer;">
+        <div style="width:3px;height:30px;border-radius:2px;background:${t.priority === 'high' ? 'var(--red)' : t.priority === 'medium' ? 'var(--orange)' : 'var(--green)'};flex-shrink:0;"></div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${t.title}</div></div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:${tagColor};">${tag}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Habits
+  loadHabits();
+}
+
+// ─── EOD PILL TRACKING (Becozinc) ────────────────────────────
+function checkEODStatus() {
+  const lastTaken = localStorage.getItem('utos_becozinc_last');
+  const becozincCard = document.querySelector('[data-pid="becozinc"]');
+  if (!becozincCard) return;
+  const eodChip = becozincCard.querySelector('.eod-chip');
+  if (lastTaken) {
+    const daysSince = Math.floor((new Date(today()) - new Date(lastTaken)) / 86400000);
+    if (daysSince === 0) {
+      // taken today — show as taken
+      if (eodChip) eodChip.textContent = 'EOD ✓';
+    } else if (daysSince === 1) {
+      // taken yesterday — due today
+      if (eodChip) eodChip.textContent = 'Due today';
+      eodChip.style.color = 'var(--orange)';
+    } else {
+      // overdue
+      if (eodChip) eodChip.textContent = 'Overdue';
+      eodChip.style.color = 'var(--red)';
+    }
+  } else {
+    if (eodChip) eodChip.textContent = 'EOD';
+  }
 }
 
 // ─── INIT ────────────────────────────────────────────────────
