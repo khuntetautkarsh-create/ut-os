@@ -924,6 +924,136 @@ body {
 
 select option { background: white; }
 
+/* ROUTINE */
+.rcat {
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.rcat.active { background: rgba(184,137,46,0.12); border-color: var(--accent); color: var(--accent); }
+
+.routine-block {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.routine-time-col {
+  width: 52px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-top: 14px;
+}
+
+.routine-time-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.3;
+}
+
+.routine-line-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.routine-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--surface);
+  margin-top: 16px;
+  flex-shrink: 0;
+  transition: all 0.18s;
+  cursor: pointer;
+}
+
+.routine-dot.done {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.routine-connector {
+  width: 2px;
+  flex: 1;
+  background: var(--border);
+  margin-top: 2px;
+  min-height: 20px;
+}
+
+.routine-card {
+  flex: 1;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: all 0.18s;
+}
+
+.routine-card.done {
+  opacity: 0.5;
+  background: var(--surface2);
+}
+
+.routine-card.done .routine-card-title { text-decoration: line-through; color: var(--text3); }
+
+.routine-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.routine-card-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.routine-cat-pill {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(184,137,46,0.08);
+  border: 0.5px solid rgba(184,137,46,0.2);
+  color: var(--accent);
+  margin-left: 6px;
+}
+
+.now-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 0 0 0 66px;
+}
+
+.now-line {
+  flex: 1;
+  height: 1.5px;
+  background: var(--red);
+  border-radius: 1px;
+}
+
+.now-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--red);
+  white-space: nowrap;
+}
+
 /* TASK SYSTEM */
 .filter-chip {
   padding: 5px 11px;
@@ -1136,47 +1266,38 @@ select option { background: white; }
     </div>
   </div>
 
-  <!-- Pills summary -->
+  <!-- Affirmations — first thing you see -->
   <div style="margin:16px 16px 0;">
-    <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Today's Pills</div>
-    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="font-size:15px;font-weight:700;" id="dashPillStatus">Loading...</div>
-        <div onclick="switchPage('pills',document.querySelectorAll('.nav-item')[3])" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">view all →</div>
-      </div>
-      <div style="background:var(--bg);border-radius:4px;height:4px;overflow:hidden;">
-        <div id="dashPillBar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 0.4s;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;">Affirmations</div>
+      <div onclick="openAffirmationModal()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">+ add</div>
+    </div>
+    <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;">
+      <div id="affirmationText" style="font-size:15px;font-weight:600;line-height:1.7;color:var(--text);">No affirmations yet. Tap + to add one.</div>
+      <div style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+        <div onclick="nextAffirmation()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">next →</div>
+        <div id="affirmationDelete" onclick="deleteCurrentAffirmation()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);cursor:pointer;display:none;">🗑 delete</div>
+        <div id="affirmationSource" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;"></div>
       </div>
     </div>
   </div>
 
-  <!-- Overdue + today tasks -->
+  <!-- Action Required -->
   <div style="margin:14px 16px 0;">
     <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Action Required</div>
     <div id="dashTasks"><div class="loading">Loading...</div></div>
   </div>
 
-  <!-- Habits -->
+  <!-- Pills — last -->
   <div style="margin:14px 16px 0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;">Daily Habits</div>
-      <div onclick="openHabitModal()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">+ add</div>
-    </div>
-    <div id="dashHabits"><div class="loading">Loading...</div></div>
-  </div>
-
-  <!-- Health affirmations -->
-  <div style="margin:14px 16px 0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;">Health Anchors</div>
-      <div onclick="openAffirmationModal()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">+ add</div>
-    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">Medications & Supplements</div>
     <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;">
-      <div id="affirmationText" style="font-size:14px;font-weight:600;line-height:1.6;color:var(--text);"></div>
-      <div style="margin-top:10px;display:flex;gap:12px;align-items:center;">
-        <div onclick="nextAffirmation()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">next →</div>
-        <div id="affirmationDelete" onclick="deleteCurrentAffirmation()" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);cursor:pointer;display:none;">🗑 delete</div>
-        <div id="affirmationSource" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-left:auto;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:15px;font-weight:700;" id="dashPillStatus">Loading...</div>
+        <div onclick="switchPage('pills',document.querySelectorAll('.nav-item')[5])" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);cursor:pointer;">view all →</div>
+      </div>
+      <div style="background:var(--bg);border-radius:4px;height:4px;overflow:hidden;">
+        <div id="dashPillBar" style="height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width 0.4s;"></div>
       </div>
     </div>
   </div>
@@ -1187,9 +1308,9 @@ select option { background: white; }
 <!-- AFFIRMATION MODAL -->
 <div id="affirmationModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);" onclick="if(event.target===this)closeAffirmationModal()">
   <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 50px;">
-    <div style="font-size:16px;font-weight:800;margin-bottom:6px;">Add Health Anchor</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:14px;">A fact, reminder, or reframe that helps when health anxiety spikes.</div>
-    <textarea id="affirmationInput" placeholder="e.g. My CRP is 0.46 — lowest in 12 months. The inflammation is resolving." style="width:100%;padding:12px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;resize:none;min-height:100px;margin-bottom:14px;"></textarea>
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px;">New Affirmation</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:14px;">Something true that grounds you when your mind spirals.</div>
+    <textarea id="affirmationInput" placeholder="Write it in your own words..." style="width:100%;padding:12px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;resize:none;min-height:110px;margin-bottom:14px;"></textarea>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <button onclick="closeAffirmationModal()" style="padding:12px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
       <button onclick="saveAffirmation()" style="padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Save</button>
@@ -1197,19 +1318,56 @@ select option { background: white; }
   </div>
 </div>
 
-<!-- HABIT MODAL -->
-<div id="habitModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);" onclick="if(event.target===this)closeHabitModal()">
-  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 50px;">
-    <div style="font-size:16px;font-weight:800;margin-bottom:14px;">New Habit</div>
-    <input id="habitName" placeholder="Habit name (e.g. 10k steps, no sugar)" style="width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;margin-bottom:10px;">
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);display:flex;align-items:center;">Icon</div>
-      <input id="habitIcon" placeholder="emoji" style="width:60px;padding:8px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-size:20px;text-align:center;outline:none;">
+<!-- ROUTINE MODAL -->
+<div id="routineModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.4);" onclick="if(event.target===this)closeRoutineModal()">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 50px;max-height:85vh;overflow-y:auto;">
+    <div style="font-size:16px;font-weight:800;margin-bottom:14px;" id="routineModalTitle">Add Routine Block</div>
+    <input id="rm-title" placeholder="What is it? (e.g. Morning walk, Deep work, Gym)" style="width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:14px;color:var(--text);outline:none;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">START TIME</div>
+        <input type="time" id="rm-start" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:12px;color:var(--text);outline:none;">
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;">END TIME</div>
+        <input type="time" id="rm-end" style="width:100%;padding:9px 10px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'DM Mono',monospace;font-size:12px;color:var(--text);outline:none;">
+      </div>
     </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:6px;">CATEGORY</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="routineCatChips">
+        <div class="rcat active" data-cat="morning" onclick="selectRCat(this)">🌅 Morning</div>
+        <div class="rcat" data-cat="health" onclick="selectRCat(this)">🏥 Health</div>
+        <div class="rcat" data-cat="train" onclick="selectRCat(this)">🏋️ Train</div>
+        <div class="rcat" data-cat="work" onclick="selectRCat(this)">💼 Work</div>
+        <div class="rcat" data-cat="wind" onclick="selectRCat(this)">🌙 Wind down</div>
+        <div class="rcat" data-cat="other" onclick="selectRCat(this)">⚡ Other</div>
+      </div>
+    </div>
+    <input id="rm-note" placeholder="Note (optional)" style="width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;color:var(--text);outline:none;margin-bottom:14px;">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button onclick="closeHabitModal()" style="padding:12px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
-      <button onclick="saveHabit()" style="padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Save</button>
+      <button onclick="closeRoutineModal()" style="padding:12px;border:0.5px solid var(--border);border-radius:12px;background:var(--bg);font-family:'Syne',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
+      <button onclick="saveRoutineBlock()" style="padding:12px;background:var(--accent);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- ROUTINE PAGE -->
+<div class="page" id="page-routine">
+  <div class="header">
+    <div class="header-row" style="margin-bottom:0;">
+      <div class="header-title">Routine</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div id="routineProgress" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);"></div>
+        <button onclick="openRoutineModal()" style="background:var(--accent);color:white;border:none;border-radius:8px;width:28px;height:28px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-top:4px;" id="routineDate"></div>
+  </div>
+
+  <!-- Timeline -->
+  <div id="routineTimeline" style="padding:16px 16px 100px;">
+    <div class="loading">Loading your routine...</div>
   </div>
 </div>
 
@@ -1676,24 +1834,28 @@ select option { background: white; }
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-item active" onclick="switchPage('dashboard', this)">
-    <div class="nav-icon">🏠</div>
+    <div class="nav-icon">⚡</div>
     <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('routine', this)">
+    <div class="nav-icon">🌅</div>
+    <div class="nav-label">Routine</div>
   </div>
   <div class="nav-item" onclick="switchPage('workout', this)">
     <div class="nav-icon">🏋️</div>
-    <div class="nav-label">Workout</div>
+    <div class="nav-label">Train</div>
   </div>
   <div class="nav-item" onclick="switchPage('tasks', this)">
     <div class="nav-icon">✅</div>
     <div class="nav-label">Tasks</div>
   </div>
-  <div class="nav-item" onclick="switchPage('pills', this)">
-    <div class="nav-icon">💊</div>
-    <div class="nav-label">Pills</div>
-  </div>
   <div class="nav-item" onclick="switchPage('notes', this)">
     <div class="nav-icon">📝</div>
     <div class="nav-label">Notes</div>
+  </div>
+  <div class="nav-item" onclick="switchPage('pills', this)">
+    <div class="nav-icon">💊</div>
+    <div class="nav-label">Pills</div>
   </div>
 </nav>
 
@@ -1769,10 +1931,11 @@ function switchPage(name, el) {
     if (page) page.classList.add('active');
     if (el) el.classList.add('active');
     if (name === 'dashboard') loadDashboard();
+    if (name === 'routine') loadRoutine();
     if (name === 'workout') { loadWorkoutHistory(); loadTemplates(); }
     if (name === 'tasks') loadTasks();
     if (name === 'notes') loadNotes();
-    if (name === 'pills') renderPills();
+    if (name === 'pills') { renderPills(); checkEODStatus(); }
   } catch(e) { console.error('switchPage error:', e); }
 }
 
@@ -2679,59 +2842,46 @@ async function deleteNote(id) {
 }
 
 // ─── DASHBOARD ────────────────────────────────────────────────
-const AFFIRMATIONS = [
-  "UC is in remission. CRP 0.46 — best in 12 months. Your gut is healing.",
-  "No blood since January 2026. No urgency, no night stools. That is real stability.",
-  "The April episode was dietary + antibiotics — not a flare. Dr. Vijay Sharma confirmed this.",
-  "Mesacol is working. Indefinite maintenance is the right call for your biology.",
-  "You lost 3kg fat in 2 months while preserving muscle. The body composition trajectory is correct.",
-  "HbA1c 4.8% — your metabolic health is genuinely excellent despite being in a fat loss phase.",
-  "Hemoglobin recovered from 13.6 to 15.2. Your body is absorbing and building properly again.",
-  "Lipid panel is clean. Total cholesterol 143, LDL 83. Cardiovascular risk is low.",
-  "Thyroid is normal. TSH 2.32, mid-range. No thyroid issue affecting your energy or fat loss.",
-  "The axilla cyst is surgically resolved. Histopathology confirmed benign. That chapter is closed.",
-  "Symptom scanning after health events is a normal nervous system response — not a sign of disease.",
-  "Your spine is manageable with smart load. No major functional limitation at appropriate training loads.",
-  "18–20 gym sessions per month is elite consistency for someone managing UC. You are doing it.",
-  "The body scan anxiety is the amygdala, not the body. Mechanistic thinking is your antidote.",
-  "You are 30, in remission, building muscle, losing fat. The trajectory is right."
-];
-
 let affirmationIndex = 0;
 let customAffirmations = [];
-let allAffirmations = [...AFFIRMATIONS];
-let currentAffirmationIsCustom = false;
+let allAffirmations = [];
 let currentCustomAffirmationId = null;
 
 async function loadCustomAffirmations() {
   const data = await sb("notes?tags=cs.{affirmation}&select=*&order=created_at.desc");
   customAffirmations = data || [];
-  allAffirmations = [...customAffirmations.map(a => a.content), ...AFFIRMATIONS];
+  allAffirmations = customAffirmations.map(a => ({ id: a.id, text: a.content }));
 }
 
 function showAffirmation(index) {
-  const text = allAffirmations[index];
-  document.getElementById('affirmationText').textContent = text;
-  // Check if it's custom (first N items are custom)
-  const isCustom = index < customAffirmations.length;
-  currentAffirmationIsCustom = isCustom;
-  currentCustomAffirmationId = isCustom ? customAffirmations[index].id : null;
+  const el = document.getElementById('affirmationText');
   const delBtn = document.getElementById('affirmationDelete');
   const srcLabel = document.getElementById('affirmationSource');
-  if (delBtn) delBtn.style.display = isCustom ? 'block' : 'none';
-  if (srcLabel) srcLabel.textContent = isCustom ? 'your anchor' : 'preset';
+  if (!allAffirmations.length) {
+    if (el) el.textContent = 'No affirmations yet. Tap + to add one.';
+    if (delBtn) delBtn.style.display = 'none';
+    if (srcLabel) srcLabel.textContent = '';
+    currentCustomAffirmationId = null;
+    return;
+  }
+  const item = allAffirmations[index];
+  if (el) el.textContent = item.text;
+  currentCustomAffirmationId = item.id;
+  if (delBtn) delBtn.style.display = 'block';
+  if (srcLabel) srcLabel.textContent = (index + 1) + ' / ' + allAffirmations.length;
 }
 
 function nextAffirmation() {
+  if (!allAffirmations.length) return;
   affirmationIndex = (affirmationIndex + 1) % allAffirmations.length;
   showAffirmation(affirmationIndex);
 }
 
 async function deleteCurrentAffirmation() {
   if (!currentCustomAffirmationId) return;
-  if (!confirm('Delete this anchor?')) return;
+  if (!confirm('Delete this affirmation?')) return;
   await sb(`notes?id=eq.${currentCustomAffirmationId}`, 'DELETE');
-  showToast('🗑 Anchor deleted');
+  showToast('🗑 Deleted');
   await loadCustomAffirmations();
   affirmationIndex = 0;
   showAffirmation(0);
@@ -2751,78 +2901,192 @@ async function saveAffirmation() {
   const content = document.getElementById('affirmationInput').value.trim();
   if (!content) { showToast('Write something first'); return; }
   const now = new Date().toISOString();
-  await sb('notes', 'POST', {
-    title: 'Health Anchor',
-    content,
-    tags: ['affirmation'],
-    created_at: now,
-    updated_at: now
-  });
-  showToast('✓ Anchor saved');
+  await sb('notes', 'POST', { title: 'Affirmation', content, tags: ['affirmation'], created_at: now, updated_at: now });
+  showToast('✓ Affirmation saved');
   closeAffirmationModal();
   await loadCustomAffirmations();
-  // Jump to the new one (first in list)
   affirmationIndex = 0;
   showAffirmation(0);
 }
 
-// ─── HABITS ──────────────────────────────────────────────────
-let allHabits = [];
+// ─── ROUTINE ─────────────────────────────────────────────────
+let routineBlocks = [];
+let selectedRCat = 'morning';
+let editingRoutineId = null;
+const ROUTINE_KEY = 'utos_routine_v1';
+const ROUTINE_LOG_KEY = 'utos_routine_log_';
 
-function openHabitModal() { document.getElementById('habitModal').style.display = 'block'; }
-function closeHabitModal() { document.getElementById('habitModal').style.display = 'none'; }
+const CAT_META = {
+  morning: { label: '🌅 Morning', color: '#b8892e' },
+  health:  { label: '🏥 Health',  color: '#4a8a4a' },
+  train:   { label: '🏋️ Train',  color: '#3a7a9a' },
+  work:    { label: '💼 Work',    color: '#7a5a9a' },
+  wind:    { label: '🌙 Wind down', color: '#8a6a4a' },
+  other:   { label: '⚡ Other',   color: '#888' },
+};
 
-async function saveHabit() {
-  const name = document.getElementById('habitName').value.trim();
-  if (!name) { showToast('Name required'); return; }
-  const icon = document.getElementById('habitIcon').value.trim() || '⭕';
-  // store in notes table with tag 'habit' as a simple hack — or use localStorage for habits
-  const habits = JSON.parse(localStorage.getItem('utos_habits') || '[]');
-  habits.push({ id: Date.now().toString(), name, icon, created: today() });
-  localStorage.setItem('utos_habits', JSON.stringify(habits));
-  document.getElementById('habitName').value = '';
-  document.getElementById('habitIcon').value = '';
-  closeHabitModal();
-  showToast('✓ Habit added');
-  loadHabits();
+function selectRCat(el) {
+  document.querySelectorAll('.rcat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedRCat = el.dataset.cat;
 }
 
-function loadHabits() {
-  allHabits = JSON.parse(localStorage.getItem('utos_habits') || '[]');
-  const todayLogs = JSON.parse(localStorage.getItem('utos_habit_logs_' + today()) || '{}');
-  const container = document.getElementById('dashHabits');
-  if (!allHabits.length) {
-    container.innerHTML = `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);">No habits yet. Tap + to add daily habits.</div>`;
-    return;
+function openRoutineModal(id = null) {
+  editingRoutineId = id;
+  document.getElementById('routineModalTitle').textContent = id ? 'Edit Block' : 'Add Routine Block';
+  if (id) {
+    const block = routineBlocks.find(b => b.id === id);
+    if (!block) return;
+    document.getElementById('rm-title').value = block.title;
+    document.getElementById('rm-start').value = block.start || '';
+    document.getElementById('rm-end').value = block.end || '';
+    document.getElementById('rm-note').value = block.note || '';
+    selectedRCat = block.cat || 'morning';
+  } else {
+    document.getElementById('rm-title').value = '';
+    document.getElementById('rm-start').value = '';
+    document.getElementById('rm-end').value = '';
+    document.getElementById('rm-note').value = '';
+    selectedRCat = 'morning';
   }
-  container.innerHTML = allHabits.map(h => {
-    const done = todayLogs[h.id];
-    return `
-    <div onclick="toggleHabit('${h.id}')" style="background:var(--surface);border:0.5px solid ${done ? 'var(--green)' : 'var(--border)'};border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:7px;cursor:pointer;transition:all 0.18s;${done ? 'opacity:0.7;' : ''}">
-      <div style="font-size:22px;">${h.icon}</div>
-      <div style="flex:1;font-size:14px;font-weight:600;${done ? 'text-decoration:line-through;color:var(--text3);' : ''}">${h.name}</div>
-      <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid ${done ? 'var(--green)' : 'var(--border2)'};background:${done ? 'var(--green)' : 'transparent'};display:flex;align-items:center;justify-content:center;">
-        ${done ? '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
-      </div>
-      <div onclick="event.stopPropagation();deleteHabit('${h.id}')" style="font-size:12px;color:var(--text3);padding:2px 4px;">×</div>
-    </div>`;
-  }).join('');
+  document.querySelectorAll('.rcat').forEach(c => c.classList.toggle('active', c.dataset.cat === selectedRCat));
+  document.getElementById('routineModal').style.display = 'block';
+  setTimeout(() => document.getElementById('rm-title').focus(), 100);
 }
 
-function toggleHabit(id) {
-  const key = 'utos_habit_logs_' + today();
+function closeRoutineModal() {
+  document.getElementById('routineModal').style.display = 'none';
+  editingRoutineId = null;
+}
+
+function saveRoutineBlock() {
+  const title = document.getElementById('rm-title').value.trim();
+  if (!title) { showToast('Add a title first'); return; }
+  if (editingRoutineId) {
+    routineBlocks = routineBlocks.map(b => b.id === editingRoutineId
+      ? { ...b, title, start: document.getElementById('rm-start').value, end: document.getElementById('rm-end').value, cat: selectedRCat, note: document.getElementById('rm-note').value.trim() }
+      : b
+    );
+  } else {
+    routineBlocks.push({
+      id: Date.now().toString(),
+      title,
+      start: document.getElementById('rm-start').value,
+      end: document.getElementById('rm-end').value,
+      cat: selectedRCat,
+      note: document.getElementById('rm-note').value.trim()
+    });
+  }
+  // sort by start time
+  routineBlocks.sort((a, b) => (a.start || '99:99').localeCompare(b.start || '99:99'));
+  localStorage.setItem(ROUTINE_KEY, JSON.stringify(routineBlocks));
+  closeRoutineModal();
+  showToast(editingRoutineId ? '✓ Updated' : '✓ Block added');
+  renderRoutine();
+}
+
+function deleteRoutineBlock(id) {
+  routineBlocks = routineBlocks.filter(b => b.id !== id);
+  localStorage.setItem(ROUTINE_KEY, JSON.stringify(routineBlocks));
+  renderRoutine();
+  showToast('🗑 Removed');
+}
+
+function toggleRoutineDone(id) {
+  const key = ROUTINE_LOG_KEY + today();
   const logs = JSON.parse(localStorage.getItem(key) || '{}');
   logs[id] = !logs[id];
   localStorage.setItem(key, JSON.stringify(logs));
-  loadHabits();
-  if (logs[id]) showToast('✓ Habit done!');
+  renderRoutine();
 }
 
-function deleteHabit(id) {
-  let habits = JSON.parse(localStorage.getItem('utos_habits') || '[]');
-  habits = habits.filter(h => h.id !== id);
-  localStorage.setItem('utos_habits', JSON.stringify(habits));
-  loadHabits();
+function loadRoutine() {
+  routineBlocks = JSON.parse(localStorage.getItem(ROUTINE_KEY) || '[]');
+  document.getElementById('routineDate').textContent = fmtDate(new Date());
+  renderRoutine();
+}
+
+function renderRoutine() {
+  const container = document.getElementById('routineTimeline');
+  const logs = JSON.parse(localStorage.getItem(ROUTINE_LOG_KEY + today()) || '{}');
+  const done = routineBlocks.filter(b => logs[b.id]).length;
+  const total = routineBlocks.length;
+  const prog = document.getElementById('routineProgress');
+  if (prog) prog.textContent = total > 0 ? `${done} / ${total}` : '';
+
+  if (!routineBlocks.length) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;line-height:2;">
+        Your daily flow lives here.<br>
+        Tap + to build your routine.<br><br>
+        <span style="font-size:11px;opacity:0.6;">Morning walk, deep work session,<br>gym, wind-down — anything with a time.</span>
+      </div>`;
+    return;
+  }
+
+  // current time for "now" indicator
+  const now = new Date();
+  const nowStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  let nowInserted = false;
+
+  let html = '';
+  routineBlocks.forEach((block, i) => {
+    const isDone = !!logs[block.id];
+    const meta = CAT_META[block.cat] || CAT_META.other;
+    const isNext = !isDone && !nowInserted && (!block.start || block.start >= nowStr);
+    const isPast = block.end && block.end < nowStr && !isDone;
+
+    // insert now line before first upcoming block
+    if (!nowInserted && block.start && block.start >= nowStr) {
+      html += `<div class="now-indicator"><div class="now-label">NOW ${nowStr}</div><div class="now-line"></div></div>`;
+      nowInserted = true;
+    }
+
+    html += `
+    <div class="routine-block">
+      <div class="routine-time-col">
+        <div class="routine-time-text">${block.start || ''}</div>
+        ${block.end ? `<div class="routine-time-text" style="opacity:0.5;">${block.end}</div>` : ''}
+      </div>
+      <div class="routine-line-col">
+        <div class="routine-dot ${isDone ? 'done' : ''}" onclick="toggleRoutineDone('${block.id}')">
+          ${isDone ? '<svg width="7" height="7" viewBox="0 0 7 7" fill="none" style="margin:1px auto;display:block;"><path d="M1 3.5L3 5.5L6 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+        </div>
+        ${i < routineBlocks.length - 1 ? '<div class="routine-connector"></div>' : ''}
+      </div>
+      <div class="routine-card ${isDone ? 'done' : ''}" style="${isNext ? 'border-color:' + meta.color + ';box-shadow:0 0 0 1px ' + meta.color + '22;' : ''}${isPast && !isDone ? 'opacity:0.45;' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="routine-card-title">${block.title}</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-shrink:0;margin-left:8px;">
+            <div onclick="openRoutineModal('${block.id}')" style="font-size:13px;cursor:pointer;color:var(--text3);">✏️</div>
+            <div onclick="deleteRoutineBlock('${block.id}')" style="font-size:13px;cursor:pointer;color:var(--text3);">×</div>
+          </div>
+        </div>
+        <div class="routine-card-meta">
+          <span style="color:${meta.color};">${meta.label}</span>
+          ${block.end && block.start ? `<span style="margin-left:6px;">${calcDuration(block.start, block.end)}</span>` : ''}
+          ${block.note ? `<div style="margin-top:3px;color:var(--text2);font-size:11px;">${block.note}</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  if (!nowInserted) {
+    html += `<div class="now-indicator"><div class="now-label">NOW ${nowStr}</div><div class="now-line"></div></div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function calcDuration(start, end) {
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  const mins = (eh * 60 + em) - (sh * 60 + sm);
+  if (mins <= 0) return '';
+  if (mins < 60) return mins + 'min';
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h + 'h' + (m ? ' ' + m + 'min' : '');
 }
 
 async function loadDashboard() {
@@ -2832,9 +3096,9 @@ async function loadDashboard() {
   document.getElementById('dashGreeting').textContent = greeting;
   document.getElementById('dashDate').textContent = fmtDate(new Date());
 
-  // Affirmation
+  // Affirmations
   await loadCustomAffirmations();
-  affirmationIndex = Math.floor(Math.random() * allAffirmations.length);
+  affirmationIndex = allAffirmations.length > 0 ? Math.floor(Math.random() * allAffirmations.length) : 0;
   showAffirmation(affirmationIndex);
 
   // Pills progress
@@ -2842,19 +3106,19 @@ async function loadDashboard() {
   const totalPills = document.querySelectorAll('.pill-card').length;
   const takenPills = (pillData || []).filter(r => r.taken).length;
   const pillPct = totalPills > 0 ? Math.round((takenPills / totalPills) * 100) : 0;
-  document.getElementById('dashPillStatus').textContent = pillPct === 100 ? '✅ All doses taken' : `${takenPills} / ${totalPills} taken`;
+  document.getElementById('dashPillStatus').textContent = pillPct === 100 ? '✅ All doses taken' : `${takenPills} / ${totalPills} taken today`;
   document.getElementById('dashPillBar').style.width = pillPct + '%';
   document.getElementById('dashPillBar').style.background = pillPct === 100 ? 'var(--green)' : 'var(--accent)';
 
-  // Tasks - overdue + today
+  // Tasks - overdue + today + high priority
   const tasks = await sb(`tasks?select=*&completed=eq.false&order=priority.asc`);
   const actionable = (tasks || []).filter(t =>
     t.due_date === today() || (t.due_date && t.due_date < today()) || t.priority === 'high'
-  ).slice(0, 5);
+  ).slice(0, 6);
 
   const dashTasks = document.getElementById('dashTasks');
   if (!actionable.length) {
-    dashTasks.innerHTML = `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);">No urgent tasks. Clear slate 🎉</div>`;
+    dashTasks.innerHTML = `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);">Clear slate. Nothing urgent right now 🎉</div>`;
   } else {
     dashTasks.innerHTML = actionable.map(t => {
       const isOverdue = t.due_date && t.due_date < today();
@@ -2863,15 +3127,12 @@ async function loadDashboard() {
       const tag = isOverdue ? '⚠ overdue' : isToday ? '📅 today' : '🔴 high';
       return `
       <div onclick="completeTask('${t.id}')" style="background:var(--surface);border:0.5px solid ${isOverdue ? 'rgba(192,64,64,0.25)' : 'var(--border)'};border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;cursor:pointer;">
-        <div style="width:3px;height:30px;border-radius:2px;background:${t.priority === 'high' ? 'var(--red)' : t.priority === 'medium' ? 'var(--orange)' : 'var(--green)'};flex-shrink:0;"></div>
-        <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${t.title}</div></div>
+        <div style="width:3px;height:32px;border-radius:2px;background:${t.priority === 'high' ? 'var(--red)' : t.priority === 'medium' ? 'var(--orange)' : 'var(--green)'};flex-shrink:0;"></div>
+        <div style="flex:1;font-size:14px;font-weight:600;">${t.title}</div>
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:${tagColor};">${tag}</div>
       </div>`;
     }).join('');
   }
-
-  // Habits
-  loadHabits();
 }
 
 // ─── EOD PILL TRACKING (Becozinc) ────────────────────────────
